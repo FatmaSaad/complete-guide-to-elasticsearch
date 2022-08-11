@@ -1,0 +1,293 @@
+1
+
+00:00:02,940  -->  00:00:08,220
+In the previous lecture, I briefly mentioned
+the use case for the “keyword” data type,
+
+2
+
+00:00:08,520  -->  00:00:11,560
+being filtering, sorting, and aggregations.
+
+3
+
+00:00:12,420  -->  00:00:15,140
+But why is its use limited to this?
+
+4
+
+00:00:15,500  -->  00:00:19,620
+Why can’t we use it for full-text searches
+as with the “text” data type?
+
+5
+
+00:00:20,180  -->  00:00:25,740
+To answer those questions, we need to dive
+into how “keyword” fields are analyzed and stored.
+
+6
+
+00:00:27,220  -->  00:00:31,180
+Previously you saw how the “standard”
+analyzer is used for “text” fields.
+
+7
+
+00:00:31,660  -->  00:00:36,720
+For “keyword” fields, however, an analyzer
+named “keyword” is used instead.
+
+8
+
+00:00:37,320  -->  00:00:43,440
+This analyzer is actually a so-called no-op
+analyzer, meaning that it doesn’t do anything.
+
+9
+
+00:00:43,860  -->  00:00:48,860
+Well, besides returning the unmodified input
+string as a single token.
+
+10
+
+00:00:49,620  -->  00:00:54,360
+The string is not modified in any way, because
+it is intended for exact matching.
+
+11
+
+00:00:55,220  -->  00:00:59,800
+We can verify this by using the Analyze API
+that I showed you a bit earlier.
+
+12
+
+00:01:00,740  -->  00:01:04,740
+I have prepared the query for doing so, so
+let’s just go ahead and run it.
+
+13
+
+00:01:08,000  -->  00:01:13,940
+As you can see, the string is left entirely
+untouched and is just returned as a single token.
+
+14
+
+00:01:14,700  -->  00:01:20,560
+If symbols were to be stripped out, for instance,
+we wouldn’t be able to perform exact searches.
+
+15
+
+00:01:21,100  -->  00:01:21,840
+Why?
+
+16
+
+00:01:22,200  -->  00:01:26,680
+Because the values within the inverted index
+would then differ from the string that was
+
+17
+
+00:01:26,680  -->  00:01:29,260
+provided within the indexed document.
+
+18
+
+00:01:29,800  -->  00:01:33,860
+Searching for the original value would therefore
+yield no results.
+
+19
+
+00:01:34,960  -->  00:01:39,560
+Speaking of the inverted index, let’s have
+a look at what it would look like a couple
+
+20
+
+00:01:39,560  -->  00:01:40,420
+of documents.
+
+21
+
+00:01:41,880  -->  00:01:46,700
+As you can see, the entire field values are
+stored as a single term.
+
+22
+
+00:01:47,320  -->  00:01:51,460
+This is unlike the “text” fields where
+the “standard” analyzer is used.
+
+23
+
+00:01:52,020  -->  00:01:57,200
+Apart from tokenization, we can also see how
+the “keyword” analyzer does not remove
+
+24
+
+00:01:57,200  -->  00:02:01,440
+any symbols from the string, and neither does
+it lowercase letters.
+
+25
+
+00:02:02,660  -->  00:02:08,100
+This example is good for understanding that
+text is left completely untouched when using
+
+26
+
+00:02:08,100  -->  00:02:09,340
+the “keyword” data type.
+
+27
+
+00:02:09,880  -->  00:02:15,160
+However, it doesn’t demonstrate a realistic
+use case for a “keyword” field, since
+
+28
+
+00:02:15,160  -->  00:02:19,120
+no one is realistically going to search for
+exactly those sentences.
+
+29
+
+00:02:20,480  -->  00:02:26,080
+A much more realistic use case would be to
+map something like e-mail addresses or article
+
+30
+
+00:02:26,080  -->  00:02:28,160
+statuses as a “keyword” field.
+
+31
+
+00:02:28,880  -->  00:02:34,280
+Let’s go with a couple of documents representing
+users, each containing an e-mail address.
+
+32
+
+00:02:35,400  -->  00:02:39,320
+And here is what the inverted index for the
+“email” field would look like.
+
+33
+
+00:02:40,360  -->  00:02:45,420
+This is a much better use case, because you
+will almost always want to do exact matches
+
+34
+
+00:02:45,420  -->  00:02:47,140
+on these kinds of values.
+
+35
+
+00:02:48,440  -->  00:02:52,620
+Notice how one of the e-mail addresses contains
+uppercase letters.
+
+36
+
+00:02:53,180  -->  00:02:58,020
+Often that’s what you want with “keyword”
+fields, but in some scenarios it might make
+
+37
+
+00:02:58,020  -->  00:02:59,900
+sense to lowercase letters.
+
+38
+
+00:03:01,180  -->  00:03:06,060
+That would make sense in this example, because
+e-mail addresses are not case sensitive.
+
+39
+
+00:03:07,400  -->  00:03:12,860
+Apart from building custom analyzers, it’s
+also possible to configure existing ones.
+
+40
+
+00:03:13,800  -->  00:03:18,700
+This means that we can configure the “keyword”
+analyzer to use the “lowercase” token
+
+41
+
+00:03:18,700  -->  00:03:22,700
+filter, causing the inverted index to look
+like this instead.
+
+42
+
+00:03:23,880  -->  00:03:28,840
+I will show you how to configure analyzers
+later in this section, so I just wanted to
+
+43
+
+00:03:28,840  -->  00:03:30,720
+mention the possibility now.
+
+44
+
+00:03:31,960  -->  00:03:35,720
+Alright, let’s quickly summarize what we
+covered in this lecture.
+
+45
+
+00:03:36,340  -->  00:03:41,140
+Fields that use the “keyword” data type
+are analyzed using the “keyword” analyzer.
+
+46
+
+00:03:41,980  -->  00:03:47,700
+All this analyzer does, is to output the input
+string as a single token, with everything
+
+47
+
+00:03:47,700  -->  00:03:48,840
+left untouched.
+
+48
+
+00:03:49,620  -->  00:03:53,920
+This single token is then placed within the
+inverted index for the field.
+
+49
+
+00:03:54,720  -->  00:03:59,440
+That’s why the “keyword” data type is
+used for exact matching and things like sorting
+
+50
+
+00:03:59,440  -->  00:04:00,720
+and aggregations.
+
+51
+
+00:04:01,160  -->  00:04:07,900
+Basically structured data, which could be
+e-mail addresses, order statuses, product tags, etc.

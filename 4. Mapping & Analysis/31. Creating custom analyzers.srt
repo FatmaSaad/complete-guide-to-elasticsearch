@@ -1,0 +1,592 @@
+1
+
+00:00:02,750  -->  00:00:07,270
+Now that you know how to use the built-in
+analyzers in your mapping, let’s try to
+
+2
+
+00:00:07,270  -->  00:00:08,900
+create a custom analyzer.
+
+3
+
+00:00:09,560  -->  00:00:12,220
+We will create a new throwaway index at the
+same time.
+
+4
+
+00:00:13,520  -->  00:00:18,820
+First we need to add an object named “analysis,”
+nested within a “settings” object.
+
+5
+
+00:00:23,480  -->  00:00:28,900
+Analyzers must be declared within an object
+named “analyzer,” so let’s add that object.
+
+6
+
+00:00:31,860  -->  00:00:36,940
+We then specify the name of our analyzer as
+a key with an object as its value.
+
+7
+
+00:00:37,560  -->  00:00:41,300
+I will just name it “my_custom_analyzer”
+in lack of a better name.
+
+8
+
+00:00:48,540  -->  00:00:52,460
+Now comes the more interesting part; configuring
+the analyzer.
+
+9
+
+00:00:53,000  -->  00:00:55,140
+So what do we want it to do?
+
+10
+
+00:00:55,840  -->  00:00:59,240
+Consider the text that I have prepared for
+the Analyze API.
+
+11
+
+00:01:00,260  -->  00:01:04,940
+It contains some HTML markup and a couple
+of HTML entities.
+
+12
+
+00:01:06,240  -->  00:01:11,500
+Typically you will want to strip this out
+before indexing values into Elasticsearch,
+
+13
+
+00:01:11,500  -->  00:01:14,220
+but suppose that this hasn’t been done.
+
+14
+
+00:01:15,040  -->  00:01:20,840
+Analyzing this text using the “standard”
+analyzer is going to yield some strange terms.
+
+15
+
+00:01:21,320  -->  00:01:23,280
+Let’s check what the query outputs.
+
+16
+
+00:01:27,680  -->  00:01:34,280
+As you can see, the letters within the HTML
+entities become terms, and so do the HTML
+
+17
+
+00:01:34,280  -->  00:01:36,420
+tags, excluding the symbols.
+
+18
+
+00:01:39,400  -->  00:01:44,600
+That’s of course not ideal, because we don’t
+want search queries to match any HTML.
+
+19
+
+00:01:45,960  -->  00:01:52,460
+Fortunately there is a character filter that
+does two things; it strips out HTML tags,
+
+20
+
+00:01:52,460  -->  00:01:56,400
+and it converts HTML entities to their decoded
+values.
+
+21
+
+00:01:56,940  -->  00:02:03,660
+In this example, we will see the HTML entity for an apostrophe being converted to an actual apostrophe.
+
+22
+
+00:02:05,000  -->  00:02:11,640
+Let’s modify the query to make use of this
+character filter, which is named “html_strip,” by the way.
+
+23
+
+00:02:12,680  -->  00:02:16,900
+Let’s first get rid of the “standard”
+analyzer so that we can see exactly what the
+
+24
+
+00:02:16,900  -->  00:02:19,120
+character filter does on its own.
+
+25
+
+00:02:20,480  -->  00:02:27,200
+Now we can simply add a parameter named “char_filter”
+containing an array of strings, being names
+
+26
+
+00:02:27,200  -->  00:02:28,820
+of character filters.
+
+27
+
+00:02:33,120  -->  00:02:35,700
+Let’s run the query and check the difference.
+
+28
+
+00:02:37,940  -->  00:02:43,860
+We haven’t specified a tokenizer, so the
+input text is just emitted as a single term,
+
+29
+
+00:02:43,860  -->  00:02:45,600
+but that’s okay for now.
+
+30
+
+00:02:46,380  -->  00:02:52,620
+The HTML tags have now been removed, and the
+HTML entities have been converted to an apostrophe
+
+31
+
+00:02:52,620  -->  00:02:54,200
+and whitespaces.
+
+32
+
+00:02:55,580  -->  00:03:00,720
+This is exactly what we were looking to accomplish,
+so let’s add the character filter to our
+
+33
+
+00:03:00,720  -->  00:03:02,120
+custom analyzer.
+
+34
+
+00:03:03,160  -->  00:03:06,380
+First, we need to specify the type of the
+analyzer.
+
+35
+
+00:03:06,920  -->  00:03:11,440
+We did that in the previous lecture where
+we configured a built-in analyzer.
+
+36
+
+00:03:12,080  -->  00:03:18,260
+That involved specifying the name of an existing analyzer, but that’s not what we need to do this time.
+
+37
+
+00:03:19,340  -->  00:03:24,400
+Instead, we need to set the type to “custom”
+to tell Elasticsearch that we are building
+
+38
+
+00:03:24,400  -->  00:03:25,780
+our own analyzer.
+
+39
+
+00:03:32,780  -->  00:03:39,260
+Then we simply specify the name of the character
+filter within a parameter named “char_filter,”
+
+40
+
+00:03:39,260  -->  00:03:42,220
+so exactly what we just did with the Analyze
+API.
+
+41
+
+00:03:48,540  -->  00:03:49,900
+So far so good!
+
+42
+
+00:03:50,480  -->  00:03:55,760
+We still need to specify a tokenizer at the
+very least, so let’s just go ahead and use
+
+43
+
+00:03:55,760  -->  00:03:57,380
+the “standard” tokenizer.
+
+44
+
+00:03:58,160  -->  00:04:03,280
+To save a bit of time, I am not going to test
+the following steps with the Analyze API,
+
+45
+
+00:04:03,280  -->  00:04:07,980
+but I will test the completed analyzer to
+make sure it works as expected.
+
+46
+
+00:04:08,940  -->  00:04:14,200
+You can find the full query for the Analyze
+API within the GitHub repository in case you
+
+47
+
+00:04:14,200  -->  00:04:18,740
+want to play around with it and see how each
+part of the analyzer affects the output.
+
+48
+
+00:04:20,080  -->  00:04:23,260
+Let’s add the tokenizer to our custom analyzer.
+
+49
+
+00:04:28,420  -->  00:04:31,120
+Next up, we have token filters.
+
+50
+
+00:04:31,360  -->  00:04:36,440
+You will almost always want to lowercase letters
+when dealing with “text” fields, so let’s
+
+51
+
+00:04:36,440  -->  00:04:39,560
+add the “lowercase” token filter to the
+analyzer.
+
+52
+
+00:04:40,040  -->  00:04:44,500
+Token filters are specified as an array for
+the “filter” parameter.
+
+53
+
+00:04:51,800  -->  00:04:56,840
+Let’s also remove stop words, which can
+be done by adding the “stop” token filter.
+
+54
+
+00:04:59,100  -->  00:05:03,880
+The “stop” token filter removes stop words
+for the English language by default.
+
+55
+
+00:05:04,340  -->  00:05:08,620
+That’s good enough for now, but I will show
+you how to configure that in a moment.
+
+56
+
+00:05:09,900  -->  00:05:13,020
+Let’s add a third token filter, just for
+the sake of it.
+
+57
+
+00:05:13,660  -->  00:05:17,760
+Notice how the word “açaí” contains
+two special characters.
+
+58
+
+00:05:18,140  -->  00:05:23,120
+I am admittedly not sure what the correct
+definition is, but notice how the letters
+
+59
+
+00:05:23,120  -->  00:05:25,460
+“c” and “i” are special.
+
+60
+
+00:05:26,760  -->  00:05:32,340
+We probably don’t want to require our users
+to enter the letters in the same form, because
+
+61
+
+00:05:32,340  -->  00:05:34,140
+most probably won’t.
+
+62
+
+00:05:34,720  -->  00:05:39,620
+What we can do instead, is to convert the
+letters to their ASCII equivalents with the
+
+63
+
+00:05:39,620  -->  00:05:41,400
+“asciifolding” token filter.
+
+64
+
+00:05:42,200  -->  00:05:45,300
+Let’s add it and you will see the difference
+in just a moment.
+
+65
+
+00:05:49,480  -->  00:05:52,200
+That’s it for our fairly basic analyzer.
+
+66
+
+00:05:52,500  -->  00:05:55,300
+Time to create the index and test the analyzer.
+
+67
+
+00:05:58,040  -->  00:06:03,000
+You can make use of the analyzer in exactly
+the same way as you saw in the previous lecture.
+
+68
+
+00:06:03,280  -->  00:06:05,560
+I will just test it with the Analyze API.
+
+69
+
+00:06:14,500  -->  00:06:21,020
+Since the analyzer belongs to the “analyzer_test”
+index specifically, we need to specify the
+
+70
+
+00:06:21,040  -->  00:06:23,040
+index name within the endpoint.
+
+71
+
+00:06:31,820  -->  00:06:35,580
+This enables us to set the analyzer to “my_custom_analyzer.”
+
+72
+
+00:06:48,080  -->  00:06:54,160
+Looking at the result, we can see that the
+input has been tokenized, and that the terms are lowercased.
+
+73
+
+00:06:54,640  -->  00:06:58,780
+We can also see that a couple of words are
+missing, being stop words.
+
+74
+
+00:06:59,460  -->  00:07:03,440
+Lastly, the word “açaí” has been converted
+to plain letters.
+
+75
+
+00:07:03,840  -->  00:07:08,120
+That’s surely not the correct terminology,
+but I’m sure you see the difference.
+
+76
+
+00:07:09,560  -->  00:07:12,900
+Those are the basics of how to create custom
+analyzers.
+
+77
+
+00:07:13,280  -->  00:07:17,980
+However, sometimes you might need or want
+to configure parts of an analyzer.
+
+78
+
+00:07:19,040  -->  00:07:24,040
+For instance, we might need to index text
+in a language other than English, which would
+
+79
+
+00:07:24,040  -->  00:07:27,740
+require us to change the language of the “stop”
+token filter.
+
+80
+
+00:07:28,440  -->  00:07:33,560
+The approach of doing that is actually the
+same as when configuring a built-in analyzer
+
+81
+
+00:07:33,560  -->  00:07:35,180
+as you saw in the previous lecture.
+
+82
+
+00:07:35,960  -->  00:07:41,640
+Let’s make a copy of our query and modify
+the analyzer to remove Danish stop words instead.
+
+83
+
+00:07:46,100  -->  00:07:51,600
+Token filters are defined within a “filter”
+object, nested within the “analysis” object,
+
+84
+
+00:07:51,600  -->  00:07:52,840
+so let’s add that.
+
+85
+
+00:07:58,120  -->  00:08:03,480
+We then add a key with the name of the token
+filter, and an object containing its configuration.
+
+86
+
+00:08:23,740  -->  00:08:28,699
+This configuration essentially just takes
+the default configuration for the “stop”
+
+87
+
+00:08:28,699  -->  00:08:33,789
+token filter and overrides the “stopwords”
+parameter, instructing the filter to remove
+
+88
+
+00:08:33,789  -->  00:08:36,900
+Danish stop words instead of English ones.
+
+89
+
+00:08:37,520  -->  00:08:41,380
+We can now make use of this token filter within
+our custom analyzer.
+
+90
+
+00:08:51,680  -->  00:08:53,480
+That was pretty easy, right?
+
+91
+
+00:08:53,880  -->  00:08:59,140
+I am not going to run the query because the
+index already exists, but you can simply change
+
+92
+
+00:08:59,140  -->  00:09:01,240
+the index name if you want to run it.
+
+93
+
+00:09:02,200  -->  00:09:07,920
+We can do the exact same thing for character
+filters and tokenizers, within the “char_filter”
+
+94
+
+00:09:07,920  -->  00:09:10,820
+and “tokenizer” keys, respectively.
+
+95
+
+00:09:11,900  -->  00:09:15,240
+I will just add those as empty objects for
+your reference.
+
+96
+
+00:09:24,100  -->  00:09:29,280
+I haven’t really given you an overview of
+which character filters, tokenizers, and token
+
+97
+
+00:09:29,280  -->  00:09:30,680
+filters are available.
+
+98
+
+00:09:31,320  -->  00:09:34,540
+There’s a good reason for that; there are
+a lot.
+
+99
+
+00:09:34,540  -->  00:09:36,500
+Especially token filters.
+
+100
+
+00:09:37,040  -->  00:09:41,680
+We will get back to some of them later in
+the course such as one for handling synonyms.
+
+101
+
+00:09:42,140  -->  00:09:46,220
+If you have the time, then I encourage you
+to check out the list at the link that I have
+
+102
+
+00:09:46,220  -->  00:09:48,000
+attached to this lecture.
+
+103
+
+00:09:48,540  -->  00:09:53,740
+Otherwise just check out the documentation
+if you ever need to create a custom analyzer,
+
+104
+
+00:09:53,980  -->  00:09:55,920
+and you should be absolutely fine.
+
+105
+
+00:09:56,760  -->  00:09:59,820
+Anyway, that’s how to create custom analyzers.

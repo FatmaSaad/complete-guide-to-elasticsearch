@@ -1,0 +1,441 @@
+1
+
+00:00:02,800  -->  00:00:07,439
+Now that you know about the most important
+data types, I want to tell you about something
+
+2
+
+00:00:07,440  -->  00:00:08,680
+called type coercion.
+
+3
+
+00:00:09,620  -->  00:00:15,060
+As you know, Elasticsearch checks the data
+types for each field value when we index adocument.
+
+4
+
+00:00:16,340  -->  00:00:21,440
+A part of this process is to validate the
+data types and reject field values that are
+
+5
+
+00:00:21,500  -->  00:00:22,600
+obviously invalid.
+
+6
+
+00:00:24,060  -->  00:00:28,460
+An example of that would be trying to index
+an object for a text field.
+
+7
+
+00:00:29,060  -->  00:00:32,640
+Sometimes we can get away with providing the
+wrong data type, though.
+
+8
+
+00:00:33,380  -->  00:00:37,760
+Let’s head over to Kibana so I can show
+you an example instead of just talking about it.
+
+9
+
+00:00:38,680  -->  00:00:44,080
+Here I have three queries prepared, which
+index three documents into a new throwaway index.
+
+10
+
+00:00:44,960  -->  00:00:50,140
+We haven’t created this index, so it will
+be created automatically when indexing the
+
+11
+
+00:00:50,140  -->  00:00:53,180
+first document as I told you earlier in the
+course.
+
+12
+
+00:00:53,740  -->  00:00:55,160
+Let’s run the first query.
+
+13
+
+00:00:57,460  -->  00:01:03,000
+The index has now been created and the document
+has been indexed into it, so no surprises
+
+14
+
+00:01:03,000  -->  00:01:03,820
+so far.
+
+15
+
+00:01:04,460  -->  00:01:09,360
+A mapping for the “price” field has actually
+been created due to dynamic mapping, which
+
+16
+
+00:01:09,360  -->  00:01:10,880
+you will learn more about soon.
+
+17
+
+00:01:12,060  -->  00:01:17,180
+What Elasticsearch did, was to inspect the
+value that we supplied in order to figure
+
+18
+
+00:01:17,180  -->  00:01:18,300
+out its data type.
+
+19
+
+00:01:19,140  -->  00:01:24,200
+In this case we supplied a floating point
+number, so the “float” data type was used
+
+20
+
+00:01:24,200  -->  00:01:25,320
+within the mapping.
+
+21
+
+00:01:26,300  -->  00:01:31,640
+As for the next query, you have probably noticed
+how the floating point number has been wrapped
+
+22
+
+00:01:31,640  -->  00:01:35,460
+within double quotes, effectively turning
+it into a string value.
+
+23
+
+00:01:36,840  -->  00:01:40,180
+What do you think will happen when we run
+the query?
+
+24
+
+00:01:40,280  -->  00:01:41,400
+Well, let’s try.
+
+25
+
+00:01:44,380  -->  00:01:49,600
+The document was indexed correctly even though
+we supplied a string value instead of a floating
+
+26
+
+00:01:49,600  -->  00:01:50,600
+point number.
+
+27
+
+00:01:51,300  -->  00:01:54,000
+This is where type coercion comes into the
+picture.
+
+28
+
+00:01:54,940  -->  00:01:59,180
+Elasticsearch first resolves the data type
+that was supplied for a given field.
+
+29
+
+00:01:59,920  -->  00:02:04,620
+In the case where there is a mapping for the
+field, the two data types are compared.
+
+30
+
+00:02:05,740  -->  00:02:11,500
+Since we supplied a string for a numeric data
+type, Elasticsearch inspects the string value.
+
+31
+
+00:02:12,220  -->  00:02:17,520
+If it contains a numeric value — and only
+a numeric value — Elasticsearch will convert
+
+32
+
+00:02:17,520  -->  00:02:21,100
+the string to the correct data type, being
+“float” in this example.
+
+33
+
+00:02:22,180  -->  00:02:28,640
+The result is that a string of 7.4 is converted
+into the floating point number 7.4 instead,
+
+34
+
+00:02:29,160  -->  00:02:33,460
+and the document is indexed as if we had supplied
+a number in the first place.
+
+35
+
+00:02:35,020  -->  00:02:40,560
+So what happens if we supply a string containing
+something that cannot be converted to a float?
+
+36
+
+00:02:41,180  -->  00:02:43,840
+Well, I’m sure you can imagine, but let’s
+try.
+
+37
+
+00:02:47,080  -->  00:02:52,760
+As you can see, the query failed because the
+data type was incorrect, and Elasticsearch
+
+38
+
+00:02:52,760  -->  00:02:56,540
+was unable to coerce the value into the appropriate
+data type.
+
+39
+
+00:02:57,760  -->  00:03:02,260
+Let’s retrieve the second document that
+we indexed, because I want to show you something.
+
+40
+
+00:03:05,740  -->  00:03:10,360
+Notice how the value within the source document
+is a string and not a float.
+
+41
+
+00:03:11,040  -->  00:03:15,900
+Didn’t I just tell you that Elasticsearch
+coerces the value into a float instead of
+
+42
+
+00:03:15,900  -->  00:03:16,680
+a string?
+
+43
+
+00:03:17,300  -->  00:03:20,240
+I did, but there’s actually a good explanation.
+
+44
+
+00:03:21,660  -->  00:03:26,720
+The reason is that the “_source” key contains
+the original values that we indexed.
+
+45
+
+00:03:27,520  -->  00:03:32,040
+These are not the values that Elasticsearch
+uses internally when searching for data.
+
+46
+
+00:03:32,640  -->  00:03:34,420
+Can you guess where I’m going with this?
+
+47
+
+00:03:35,140  -->  00:03:40,140
+Elasticsearch searches the data structure
+used by Apache Lucene to store the field values.
+
+48
+
+00:03:41,100  -->  00:03:44,380
+In the case of text fields, that would be
+an inverted index.
+
+49
+
+00:03:45,600  -->  00:03:50,760
+In this example, the value has been converted
+into a float, even though we see a string
+
+50
+
+00:03:50,760  -->  00:03:51,380
+here.
+
+51
+
+00:03:51,980  -->  00:03:57,000
+Within Apache Lucene, the value is stored
+as a numeric value and not a string.
+
+52
+
+00:03:58,120  -->  00:04:02,860
+This means that if you make use of the value
+within the “_source” key, you need to
+
+53
+
+00:04:02,870  -->  00:04:08,239
+be aware that the value may be either a float
+or a string, depending on the value that was
+
+54
+
+00:04:08,240  -->  00:04:09,720
+supplied at index time.
+
+55
+
+00:04:10,940  -->  00:04:15,620
+If this is a problem for you, you either need
+to supply the correct data type in the first
+
+56
+
+00:04:15,620  -->  00:04:19,780
+place, or disable coercion, which I will show
+you how to do a bit later.
+
+57
+
+00:04:21,420  -->  00:04:26,560
+In this lecture, you saw how coercion works
+in the case of converting strings to floats.
+
+58
+
+00:04:27,300  -->  00:04:32,620
+Another example of coercion could be to supply
+a floating point for an integer field, in
+
+59
+
+00:04:32,620  -->  00:04:35,920
+which case the float will be truncated to
+an integer value.
+
+60
+
+00:04:37,120  -->  00:04:42,560
+One important thing to mention is that coercion
+is not used when figuring out which data type
+
+61
+
+00:04:42,560  -->  00:04:45,000
+to use for a field with dynamic mapping.
+
+62
+
+00:04:45,860  -->  00:04:51,300
+This means that if you supply a string value,
+the data type will be set to “text” even
+
+63
+
+00:04:51,300  -->  00:04:53,280
+if the string only contains a number.
+
+64
+
+00:04:54,440  -->  00:04:58,280
+In general you should always try to use the
+correct data types.
+
+65
+
+00:04:59,620  -->  00:05:04,740
+It’s especially important when you index
+a new field, to ensure that the correct data
+
+66
+
+00:05:04,740  -->  00:05:08,720
+type is used in the mapping — provided that
+you make use of dynamic mapping.
+
+67
+
+00:05:09,780  -->  00:05:15,240
+Anyway, the point is that Elasticsearch does
+not use coercion when creating field mappings
+
+68
+
+00:05:15,240  -->  00:05:20,340
+for us; it’s only used as a convenience
+that forgives us if we use the wrong data
+
+69
+
+00:05:20,340  -->  00:05:21,140
+types.
+
+70
+
+00:05:22,380  -->  00:05:26,380
+Whether or not you should disable coercion
+is a matter of preference.
+
+71
+
+00:05:26,880  -->  00:05:31,900
+I personally prefer to disable it, just to
+ensure that Elasticsearch always receives
+
+72
+
+00:05:31,900  -->  00:05:36,460
+the data type that it’s supposed to; otherwise
+I prefer an error to be thrown so that it
+
+73
+
+00:05:36,640  -->  00:05:38,280
+can be fixed.
+
+74
+
+00:05:40,000  -->  00:05:45,900
+Coercion is enabled by default to make Elasticsearch
+as easy and forgiving as possible, but you
+
+75
+
+00:05:45,900  -->  00:05:47,960
+will see how to disable it a bit later.
+
+76
+
+00:05:49,540  -->  00:05:54,700
+The last thing I will do in this lecture,
+is to get rid of the index that we just created,
+
+77
+
+00:05:54,710  -->  00:05:56,120
+since we won’t be using it again.

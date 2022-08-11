@@ -1,0 +1,521 @@
+1
+
+00:00:02,629  -->  00:00:08,170
+Now that you know how dynamic mapping maps
+values to field mappings by default, let’s
+
+2
+
+00:00:08,170  -->  00:00:10,140
+take a look at how it can be configured.
+
+3
+
+00:00:11,540  -->  00:00:16,180
+The most important thing to know is how to
+disable dynamic mapping, so that’s where
+
+4
+
+00:00:16,200  -->  00:00:17,080
+we will start.
+
+5
+
+00:00:17,940  -->  00:00:20,980
+I have the same queries prepared as in the
+previous lecture.
+
+6
+
+00:00:21,760  -->  00:00:27,220
+To configure whether dynamic mapping should
+be enabled or disabled, we can specify a boolean
+
+7
+
+00:00:27,220  -->  00:00:30,340
+value for the “dynamic” setting within
+the “mappings” key.
+
+8
+
+00:00:30,800  -->  00:00:32,280
+Let’s set it to “false.”
+
+9
+
+00:00:37,060  -->  00:00:39,240
+Let’s run the query to add the index again.
+
+10
+
+00:00:42,420  -->  00:00:47,060
+Let’s now see what happens when we index
+a document containing an additional field
+
+11
+
+00:00:47,060  -->  00:00:48,180
+compared to the mapping.
+
+12
+
+00:00:52,120  -->  00:00:54,340
+The document is indexed just fine.
+
+13
+
+00:00:54,760  -->  00:00:57,160
+That’s probably not what you expected.
+
+14
+
+00:00:57,520  -->  00:00:59,840
+Didn’t we just disable dynamic mapping?
+
+15
+
+00:01:00,520  -->  00:01:04,280
+Well, let’s try to retrieve the mapping
+and see what is going on.
+
+16
+
+00:01:07,300  -->  00:01:12,600
+We still only see a mapping for the “first_name”
+field, so something is different this time.
+
+17
+
+00:01:13,040  -->  00:01:18,360
+To check what is going on, let’s write a
+simple search query which searches the “first_name” field.
+
+18
+
+00:01:34,880  -->  00:01:40,359
+Within the results, we can see that the document
+was indexed just fine and that it contains
+
+19
+
+00:01:40,360  -->  00:01:42,440
+both of the fields that we specified.
+
+20
+
+00:01:42,920  -->  00:01:47,380
+Let’s make a copy of the search request
+and search the “last_name” field instead.
+
+21
+
+00:02:02,760  -->  00:02:05,340
+The document no longer matches our query.
+
+22
+
+00:02:06,000  -->  00:02:08,560
+Alright, so here is the explanation.
+
+23
+
+00:02:09,300  -->  00:02:15,100
+Setting the “dynamic” setting to “false”
+instructs Elasticsearch to ignore new fields.
+
+24
+
+00:02:15,500  -->  00:02:18,660
+Notice how I said “ignore” and not “reject.”
+
+25
+
+00:02:19,360  -->  00:02:24,660
+What happens is that the field is still part
+of the “_source” object as you saw, but
+
+26
+
+00:02:24,660  -->  00:02:25,860
+it is not indexed.
+
+27
+
+00:02:27,520  -->  00:02:32,820
+Remember that the “_source” object does
+not represent the data structure that Elasticsearch
+
+28
+
+00:02:32,820  -->  00:02:34,660
+uses to perform searches.
+
+29
+
+00:02:35,260  -->  00:02:40,020
+The “last_name” field is therefore left
+out of that data structure, being an inverted
+
+30
+
+00:02:40,020  -->  00:02:42,580
+index since we are dealing with a string value.
+
+31
+
+00:02:43,180  -->  00:02:48,420
+That’s why we see the field within the “_source”
+object, but we are unable to use the field
+
+32
+
+00:02:48,420  -->  00:02:49,800
+within our queries.
+
+33
+
+00:02:50,720  -->  00:02:56,320
+We don’t get an error if we try to do so,
+because leaving fields out when indexing documents
+
+34
+
+00:02:56,320  -->  00:02:59,200
+is perfectly valid, which you saw a bit earlier.
+
+35
+
+00:03:00,880  -->  00:03:06,740
+The value not being indexed is actually a
+consequence of no field mapping being added,
+
+36
+
+00:03:06,740  -->  00:03:09,620
+since we cannot index fields that do not have
+a mapping.
+
+37
+
+00:03:10,260  -->  00:03:16,560
+When dynamic mapping is enabled, a mapping
+is created automatically before indexing field values.
+
+38
+
+00:03:17,340  -->  00:03:22,920
+In this example we disabled that behavior,
+causing the value to not be indexed.
+
+39
+
+00:03:23,860  -->  00:03:29,700
+When the “dynamic” setting is set to “false,”
+new fields must be mapped explicitly if we
+
+40
+
+00:03:29,700  -->  00:03:33,040
+want the field values to be indexed and thereby
+searchable.
+
+41
+
+00:03:33,920  -->  00:03:38,900
+While this behavior does have its uses, I
+generally don’t recommend it.
+
+42
+
+00:03:40,700  -->  00:03:45,500
+There is a third possible value for the “dynamic”
+setting besides “true” and “false.”
+
+43
+
+00:03:46,180  -->  00:03:51,980
+By specifying a string with a value of “strict,”
+Elasticsearch will reject any document that
+
+44
+
+00:03:51,980  -->  00:03:53,820
+contains an unmapped field.
+
+45
+
+00:03:54,440  -->  00:03:59,520
+To index a document, all of its fields must
+therefore be mapped explicitly.
+
+46
+
+00:04:00,560  -->  00:04:05,000
+This behavior is similar to a relational database
+schema, for instance.
+
+47
+
+00:04:05,580  -->  00:04:09,120
+Let’s delete the index and set dynamic mapping
+to “strict.”
+
+48
+
+00:04:22,080  -->  00:04:25,040
+Running the index query again, we should get
+an error.
+
+49
+
+00:04:29,060  -->  00:04:34,160
+Indeed we get an error stating that the “last_name”
+field is not allowed because the “dynamic”
+
+50
+
+00:04:34,160  -->  00:04:35,500
+setting is set to “strict.”
+
+51
+
+00:04:36,320  -->  00:04:41,100
+Inheritance is actually supported for the
+“dynamic” setting, which gives you fine
+
+52
+
+00:04:41,100  -->  00:04:43,120
+grained control of dynamic mapping.
+
+53
+
+00:04:44,760  -->  00:04:47,380
+Suppose that we are indexing computers.
+
+54
+
+00:04:47,780  -->  00:04:52,320
+We set dynamic mapping to “strict” at
+the index level, because we want to be in
+
+55
+
+00:04:52,320  -->  00:04:54,180
+full control of the mapping.
+
+56
+
+00:04:55,020  -->  00:04:58,420
+All of the fields within the index inherit
+this configuration.
+
+57
+
+00:04:59,620  -->  00:05:04,680
+At the top level, this means that both the
+“name” and “specifications” fields
+
+58
+
+00:05:04,680  -->  00:05:07,680
+inherit the “dynamic” setting with a value
+of “strict.”
+
+59
+
+00:05:08,420  -->  00:05:14,460
+The inheritance works on multiple levels,
+so the nested “cpu” and “other” fields
+
+60
+
+00:05:14,460  -->  00:05:18,700
+inherit the setting from its parent field,
+being the “specifications” field.
+
+61
+
+00:05:20,020  -->  00:05:26,460
+Since the “cpu” field has inherited strict mapping, we can only provide a “name”  field for this object.
+
+62
+
+00:05:27,020  -->  00:05:32,860
+The index query on your screen therefore fails because there is no mapping for the “frequency” field.
+
+63
+
+00:05:34,300  -->  00:05:38,680
+Remember that strict dynamic mapping doesn’t
+change the fact that we can leave out fields
+
+64
+
+00:05:38,690  -->  00:05:45,190
+when indexing documents; fields may always
+contain zero or more values regardless of
+
+65
+
+00:05:45,190  -->  00:05:47,260
+how dynamic mapping is configured.
+
+66
+
+00:05:48,680  -->  00:05:54,280
+The “other” field stores many different
+fields depending on the product, so we cannot
+
+67
+
+00:05:54,280  -->  00:05:57,080
+map all of the possible fields in advance.
+
+68
+
+00:05:57,520  -->  00:06:03,180
+Instead, we can enable dynamic mapping for
+just that particular field, overriding the
+
+69
+
+00:06:03,180  -->  00:06:04,520
+inherited value.
+
+70
+
+00:06:05,240  -->  00:06:11,100
+Since the “other” field is an object,
+its properties will inherit this configuration,
+
+71
+
+00:06:11,100  -->  00:06:13,240
+enabling us to add new fields dynamically.
+
+72
+
+00:06:13,940  -->  00:06:17,440
+In this example, we can add a “security”
+field just fine.
+
+73
+
+00:06:19,520  -->  00:06:25,240
+Alright, two more things to cover in this
+lecture; numeric detection and date detection.
+
+74
+
+00:06:25,780  -->  00:06:29,880
+To save a bit of time, I will just be showing
+these on a couple of diagrams.
+
+75
+
+00:06:30,320  -->  00:06:35,800
+As always, the queries are available within the GitHub repository in case you want to run them.
+
+76
+
+00:06:37,720  -->  00:06:43,640
+First, enabling numeric detection is just
+a matter of setting the “numeric_detection”
+
+77
+
+00:06:43,650  -->  00:06:47,919
+setting to “true” at the root level of
+the “mappings” object — exactly as we
+
+78
+
+00:06:47,920  -->  00:06:49,560
+did with the “dynamic” setting.
+
+79
+
+00:06:50,920  -->  00:06:57,120
+When numeric detection is enabled, Elasticsearch
+will check the contents of strings to see
+
+80
+
+00:06:57,120  -->  00:06:59,740
+if they contain only numeric values.
+
+81
+
+00:07:00,100  -->  00:07:05,700
+If that is the case, the data type of a field
+will be set to either “float” or “long”
+
+82
+
+00:07:05,700  -->  00:07:07,200
+when mapped through dynamic mapping.
+
+83
+
+00:07:09,120  -->  00:07:11,660
+Finally, let’s talk about date detection.
+
+84
+
+00:07:12,280  -->  00:07:18,240
+By default, Elasticsearch inspects string
+values to look for dates in the following formats.
+
+85
+
+00:07:19,140  -->  00:07:24,491
+If there is a match, Elasticsearch will create
+a “date” field, provided that the field
+
+86
+
+00:07:24,500  -->  00:07:28,360
+hasn’t been seen before, and that dynamic
+mapping is enabled.
+
+87
+
+00:07:29,220  -->  00:07:32,420
+The field is created using the default date
+format.
+
+88
+
+00:07:32,940  -->  00:07:37,900
+You can disable date detection altogether
+by setting the “date_detection” setting
+
+89
+
+00:07:37,900  -->  00:07:38,840
+to “false.”
+
+90
+
+00:07:40,220  -->  00:07:44,140
+You can also configure the dynamic date formats
+that are recognized.
+
+91
+
+00:07:44,500  -->  00:07:50,880
+This may be useful if you have applications sending dates to Elasticsearch in non-standard formats.
+
+92
+
+00:07:52,380  -->  00:07:57,940
+Those were the basic — and probably most common — ways in which you can configure dynamic mapping.
+
+93
+
+00:07:58,480  -->  00:08:02,060
+There is another way, though, which we will
+take a look at in the next lecture.

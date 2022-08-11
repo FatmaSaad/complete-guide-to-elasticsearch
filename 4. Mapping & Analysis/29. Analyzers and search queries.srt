@@ -1,0 +1,298 @@
+1
+
+00:00:02,600  -->  00:00:06,650
+I told you how analyzers are used when indexing
+“text” fields.
+
+2
+
+00:00:06,650  -->  00:00:11,200
+That’s only half the story though, as they
+are also used for search queries.
+
+3
+
+00:00:11,820  -->  00:00:16,320
+I might be getting ahead of myself, because
+we haven’t gotten to search queries yet.
+
+4
+
+00:00:16,810  -->  00:00:21,940
+However, you might be wondering how we can
+search for the values that we index if they
+
+5
+
+00:00:21,940  -->  00:00:24,400
+are changed during the analysis process.
+
+6
+
+00:00:25,490  -->  00:00:30,580
+Perhaps I got you confused in the previous
+lecture when we discussed stemming and stop
+
+7
+
+00:00:30,580  -->  00:00:33,920
+words, so let me clear up any doubts that
+you may have.
+
+8
+
+00:00:35,240  -->  00:00:39,960
+Let’s take the example from the previous
+lecture and run it through a custom analyzer.
+
+9
+
+00:00:40,860  -->  00:00:46,440
+The analyzer behaves the same as the “standard”
+analyzer, except that it also stems words.
+
+10
+
+00:00:47,700  -->  00:00:51,660
+On the diagram, you can see how the sentence
+was analyzed.
+
+11
+
+00:00:52,140  -->  00:00:58,280
+In particular, the terms were lowercased,
+some words were stemmed, and the period symbol
+
+12
+
+00:00:58,280  -->  00:00:59,820
+was removed as well.
+
+13
+
+00:01:00,600  -->  00:01:05,180
+That’s great, but what is going to happen
+if we search for the word “drinking?”
+
+14
+
+00:01:05,980  -->  00:01:11,840
+When indexing the document, the word “drinking”
+was stemmed to its root form, so will the
+
+15
+
+00:01:11,840  -->  00:01:13,860
+document match the query?
+
+16
+
+00:01:14,220  -->  00:01:15,480
+Yes, it will.
+
+17
+
+00:01:16,320  -->  00:01:21,920
+That’s because the search query is analyzed
+in the same way as when indexing the field value.
+
+18
+
+00:01:22,380  -->  00:01:24,500
+Let me illustrate that on a diagram.
+
+19
+
+00:01:25,780  -->  00:01:31,380
+So when the document is indexed, Elasticsearch
+inspects the mapping for the “description” field.
+
+20
+
+00:01:32,000  -->  00:01:36,600
+It detects that it’s a “text” field,
+which means that it should be analyzed.
+
+21
+
+00:01:37,180  -->  00:01:40,480
+It then checks if an analyzer is configured
+for the field.
+
+22
+
+00:01:41,140  -->  00:01:47,220
+If so, that analyzer is used, and otherwise
+the “standard” analyzer is used.
+
+23
+
+00:01:48,200  -->  00:01:53,060
+In this example a custom analyzer named “stemming_analyzer”
+
+24
+
+00:01:53,060  -->  00:01:57,880
+is configured for the field, so that one is
+used in favor of the “standard” analyzer.
+
+25
+
+00:01:59,180  -->  00:02:04,060
+It pretty much behaves as the “standard”
+analyzer with the exception that words for
+
+26
+
+00:02:04,060  -->  00:02:06,160
+the English language are stemmed.
+
+27
+
+00:02:07,700  -->  00:02:12,540
+The result of running the text through this analyzer 
+is the same as what you saw a moment ago.
+
+28
+
+00:02:13,440  -->  00:02:17,880
+Those were the terms that were indexed and
+stored within the inverted index.
+
+29
+
+00:02:18,900  -->  00:02:24,420
+Remember that the original field value is
+still available within the “_source” object,
+
+30
+
+00:02:24,720  -->  00:02:27,760
+but that is not what search queries are run
+against.
+
+31
+
+00:02:29,000  -->  00:02:31,960
+Elasticsearch now receives our search query.
+
+32
+
+00:02:32,580  -->  00:02:37,980
+It looks at which fields we are searching,
+which is the “description” field in this example.
+
+33
+
+00:02:38,860  -->  00:02:43,920
+It then does the same thing as when the field
+value was indexed; it runs the value through
+
+34
+
+00:02:43,920  -->  00:02:46,740
+the analyzer that is configured in the field
+mapping.
+
+35
+
+00:02:47,660  -->  00:02:51,140
+That is, it analyzes the value that we are
+searching for.
+
+36
+
+00:02:52,080  -->  00:02:57,440
+The word “drinking” is therefore stemmed
+by the analyzer, resulting in the term “drink.”
+
+37
+
+00:02:58,140  -->  00:03:03,380
+This matches what is stored within the field’s
+inverted index, and so the document matches
+
+38
+
+00:03:03,380  -->  00:03:04,060
+the query.
+
+39
+
+00:03:05,260  -->  00:03:11,340
+As you can see, the same analyzer is used
+both when indexing documents and at search time.
+
+40
+
+00:03:12,120  -->  00:03:16,560
+If this were not the case, you would 
+get unpredictable search results.
+
+41
+
+00:03:17,720  -->  00:03:23,280
+This is also why queries run against “text”
+fields are case insensitive by default.
+
+42
+
+00:03:24,100  -->  00:03:29,740
+If your query takes the input from a website,
+it might happen that someone enters a query
+
+43
+
+00:03:29,740  -->  00:03:31,960
+in all capitalized letters.
+
+44
+
+00:03:32,440  -->  00:03:38,520
+That’s not an issue because the string will be lowercased at search time by the “standard” analyzer.
+
+45
+
+00:03:39,140  -->  00:03:45,100
+If a custom analyzer is used, this only happens
+when it includes the “lowercase” token filter.
+
+46
+
+00:03:45,900  -->  00:03:51,460
+The point is that the query is analyzed in the same way as the field values that were indexed.
+
+47
+
+00:03:52,540  -->  00:03:57,880
+It’s possible to change this behavior and
+specify a different analyzer, but that is
+
+48
+
+00:03:57,880  -->  00:04:01,520
+rarely needed, so I won’t cover that in
+this course.
+
+49
+
+00:04:02,140  -->  00:04:08,320
+If you do need to do so, you should be very
+careful, because if you don’t do it right,
+
+50
+
+00:04:08,320  -->  00:04:10,400
+you might be in for a world of trouble.
+
+51
+
+00:04:11,060  -->  00:04:17,400
+Anyway, hopefully that clears up some potential
+confusion as to how values can be matched
+
+52
+
+00:04:17,400  -->  00:04:21,180
+even though they differ from the ones specified
+within search queries.

@@ -1,0 +1,85 @@
+1
+
+00:00:02,610  -->  00:00:07,240
+Now that we have created a mapping for the
+“reviews” index, I want to quickly show
+
+2
+
+00:00:07,240  -->  00:00:09,040
+you how to retrieve mappings.
+
+3
+
+00:00:10,360  -->  00:00:14,660
+Since we specified the mapping ourselves in
+the previous lecture, there won’t be any
+
+4
+
+00:00:14,660  -->  00:00:15,900
+surprises here.
+
+5
+
+00:00:16,500  -->  00:00:21,580
+However, when using dynamic mapping, it may
+sometimes be useful to check how Elasticsearch
+
+6
+
+00:00:21,580  -->  00:00:25,420
+has mapped fields based on the documents that
+have been indexed.
+
+7
+
+00:00:26,520  -->  00:00:32,400
+To retrieve the mapping for an index, we can
+send a GET request to the Mapping API as follows.
+
+8
+
+00:00:41,880  -->  00:00:46,100
+The results essentially show the same thing
+that we typed out in the previous lecture.
+
+9
+
+00:00:46,560  -->  00:00:51,880
+In addition to retrieving mappings for the
+entire index, it is also possible to retrieve
+
+10
+
+00:00:51,880  -->  00:00:53,740
+the mapping for a specific field.
+
+11
+
+00:00:54,480  -->  00:00:58,940
+To do that, we simply use the “field”
+command, followed by the name of the field.
+
+12
+
+00:00:59,400  -->  00:01:02,100
+Let me just type that out so you can see what
+it looks like.
+
+13
+
+00:01:13,680  -->  00:01:19,960
+For objects, you can specify the path of a
+key using a dot notation, such as “author.email.”
+
+14
+
+00:01:28,440  -->  00:01:30,180
+That was pretty easy, right?
+
+15
+
+00:01:30,600  -->  00:01:34,460
+Now that you know how to retrieve an index’
+mapping, let’s continue.

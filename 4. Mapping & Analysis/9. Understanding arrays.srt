@@ -1,0 +1,347 @@
+1
+
+00:00:02,580  -->  00:00:05,940
+A moment ago we covered the most important
+data types.
+
+2
+
+00:00:06,620  -->  00:00:13,200
+Among those were basic data types such as
+text, integer, boolean, date, etc.
+
+3
+
+00:00:13,840  -->  00:00:16,900
+But what if we want to store multiple values
+for a field?
+
+4
+
+00:00:18,100  -->  00:00:21,620
+Perhaps you noticed that I didn’t mention
+any “array” data type.
+
+5
+
+00:00:22,040  -->  00:00:24,980
+There’s a good reason for that; it doesn’t
+exist.
+
+6
+
+00:00:25,640  -->  00:00:31,520
+That’s because any field in Elasticsearch
+may contain zero or more values by default.
+
+7
+
+00:00:32,740  -->  00:00:37,960
+That’s right - you can index an array of values without defining this within the field’s mapping.
+
+8
+
+00:00:38,900  -->  00:00:43,880
+We actually did that in the previous section
+where we indexed a “tags” field for products.
+
+9
+
+00:00:44,440  -->  00:00:49,920
+All we did was to supply an array as the field
+value, and everything worked out of the box.
+
+10
+
+00:00:50,700  -->  00:00:55,460
+This means that both of these two queries
+are valid, and you can run them in any order.
+
+11
+
+00:00:56,840  -->  00:01:01,519
+The “tags” field will be mapped as a “text”
+field, so we don’t define that the value
+
+12
+
+00:01:01,520  -->  00:01:06,620
+may contain multiple values; that’s just
+how Elasticsearch works by default.
+
+13
+
+00:01:07,100  -->  00:01:09,260
+The mapping would just look as follows.
+
+14
+
+00:01:10,620  -->  00:01:15,480
+As you can see, there is no sign of an “array”
+data type or the likes anywhere.
+
+15
+
+00:01:17,340  -->  00:01:20,440
+So how is this stored internally, you might
+wonder?
+
+16
+
+00:01:21,140  -->  00:01:26,260
+In the case of text fields, the strings are
+simply concatenated before being analyzed,
+
+17
+
+00:01:26,560  -->  00:01:30,360
+and the resulting tokens are stored within
+an inverted index as normal.
+
+18
+
+00:01:31,260  -->  00:01:35,020
+We can verify that this is the case by using
+the Analyze API.
+
+19
+
+00:01:36,940  -->  00:01:41,960
+Here I have a simple query that specifies
+an array of two strings instead of just a
+
+20
+
+00:01:41,960  -->  00:01:42,820
+single string.
+
+21
+
+00:01:43,360  -->  00:01:48,340
+To the right, we can see that the results
+contain tokens from both strings.
+
+22
+
+00:01:49,060  -->  00:01:55,000
+Notice the character offsets for the last
+two tokens, originating from the second string.
+
+23
+
+00:01:56,060  -->  00:02:01,380
+The offsets don’t start over from zero,
+but rather continue from the last offset of
+
+24
+
+00:02:01,380  -->  00:02:02,440
+the first string.
+
+25
+
+00:02:02,900  -->  00:02:04,260
+I hope that makes sense.
+
+26
+
+00:02:05,300  -->  00:02:11,080
+This means that the strings are indeed treated
+as a single string and not as multiple values.
+
+27
+
+00:02:11,840  -->  00:02:17,340
+I should mention that the strings are concatenated
+with a space in-between, because otherwise
+
+28
+
+00:02:17,380  -->  00:02:21,460
+the words “simply” and “merged” would
+end up within the same token.
+
+29
+
+00:02:23,220  -->  00:02:28,640
+In the case of non-text fields, the values
+are not analyzed, and multiple values are
+
+30
+
+00:02:28,640  -->  00:02:32,700
+just stored within the appropriate data structure
+within Apache Lucene.
+
+31
+
+00:02:33,560  -->  00:02:36,780
+Anyway, enough about how the values are stored.
+
+32
+
+00:02:37,340  -->  00:02:42,840
+There is one constraint when using arrays
+that you should be aware of; all of the values
+
+33
+
+00:02:42,840  -->  00:02:45,760
+within the array must be of the same data
+type.
+
+34
+
+00:02:46,840  -->  00:02:52,340
+This means that you cannot mix strings and
+integers together in the same array, for instance.
+
+35
+
+00:02:53,220  -->  00:02:58,400
+Well, I said that data types cannot be mixed,
+but that is not 100% true.
+
+36
+
+00:02:59,040  -->  00:03:04,500
+You can mix data types together as long as
+the provided types can be coerced into the
+
+37
+
+00:03:04,500  -->  00:03:06,500
+data type used within the mapping.
+
+38
+
+00:03:07,040  -->  00:03:10,060
+That’s of course assuming that coercion
+is enabled.
+
+39
+
+00:03:10,700  -->  00:03:13,240
+Consider the following arrays, for example.
+
+40
+
+00:03:14,140  -->  00:03:19,459
+While it’s certainly not ideal, these arrays
+will work, because the values that have a
+
+41
+
+00:03:19,460  -->  00:03:22,900
+wrong data type, can all be coerced into the
+right one.
+
+42
+
+00:03:23,680  -->  00:03:29,220
+That’s usually the case for simple data
+types, but not for other ones such as objects.
+
+43
+
+00:03:30,280  -->  00:03:35,660
+In this example, Elasticsearch has no way
+of coercing a boolean into an object, and
+
+44
+
+00:03:35,660  -->  00:03:37,340
+so it will return an error.
+
+45
+
+00:03:39,080  -->  00:03:44,800
+An important thing to note is that coercion
+of array values is only supported when a mapping
+
+46
+
+00:03:44,800  -->  00:03:49,720
+has already been created, either explicitly
+or through dynamic mapping.
+
+47
+
+00:03:50,520  -->  00:03:56,440
+If you index a field for the first time and
+no mapping already exists, it will be created
+
+48
+
+00:03:56,440  -->  00:03:58,620
+automatically with dynamic mapping.
+
+49
+
+00:03:59,600  -->  00:04:05,060
+However, in this case you are not allowed
+to supply mixed data types; that’s only
+
+50
+
+00:04:05,060  -->  00:04:08,920
+allowed when indexing documents after the
+mapping has been created.
+
+51
+
+00:04:10,500  -->  00:04:15,580
+I don’t recommend relying on coercion, but
+if you do, make sure that you provide the
+
+52
+
+00:04:15,580  -->  00:04:20,280
+correct data type for all array values until
+the field mapping has been created.
+
+53
+
+00:04:22,400  -->  00:04:28,300
+It’s also possible to index nested arrays, such as the example that you see on your screen now.
+
+54
+
+00:04:29,080  -->  00:04:35,200
+Supplying such an array will cause Elasticsearch
+to flatten it, i.e. to move any nested array
+
+55
+
+00:04:35,200  -->  00:04:37,080
+values up to the top level.
+
+56
+
+00:04:38,760  -->  00:04:44,360
+As a last thing, I just want to remind you
+that if you index an array of objects, you
+
+57
+
+00:04:44,360  -->  00:04:48,600
+need to use the “nested” type if you want
+to query the objects independently.
+
+58
+
+00:04:49,740  -->  00:04:53,320
+This is just a reminder of what we discussed
+in a previous lecture.
+
+59
+
+00:04:53,920  -->  00:04:58,920
+If you don’t need to query the objects independently,
+you can just use the “object” data type.
+
+60
+
+00:04:59,820  -->  00:05:02,920
+And that’s all there is to arrays, so let’s
+continue.

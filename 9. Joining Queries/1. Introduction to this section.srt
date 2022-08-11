@@ -1,0 +1,219 @@
+1
+
+00:00:02,360  -->  00:00:06,160
+In this section, we are going to look at so-called
+joining queries.
+
+2
+
+00:00:06,160  -->  00:00:09,599
+We have covered a lot about searching for
+documents already, but now we are going to
+
+3
+
+00:00:09,599  -->  00:00:12,980
+look at querying relationships between documents.
+
+4
+
+00:00:12,980  -->  00:00:17,280
+In this introductory lecture, I am just going
+to briefly show you a couple of examples of
+
+5
+
+00:00:17,280  -->  00:00:23,140
+how data can be stored in a relational database
+such as MySQL og Postgres.
+
+6
+
+00:00:23,140  -->  00:00:27,980
+Suppose that we want to store employees in
+a database, and that each employee is associated
+
+7
+
+00:00:27,980  -->  00:00:29,490
+with an address.
+
+8
+
+00:00:29,490  -->  00:00:34,570
+In relational databases, it’s best practice
+to normalize data, meaning that we can store
+
+9
+
+00:00:34,570  -->  00:00:38,620
+this data in two different tables and link
+the two with a foreign key.
+
+10
+
+00:00:38,620  -->  00:00:43,140
+Relational databases are all about creating
+and querying relationships between different
+
+11
+
+00:00:43,140  -->  00:00:47,310
+pieces of data, hence the name relational
+databases.
+
+12
+
+00:00:47,310  -->  00:00:51,770
+Or perhaps we want to store the departments
+of companies and which cities they are located
+
+13
+
+00:00:51,770  -->  00:00:56,070
+within, in which case the database schema
+could look something like this.
+
+14
+
+00:00:56,070  -->  00:01:01,170
+In this case, each department has a foreign
+key to the city that it is located in, meaning
+
+15
+
+00:01:01,170  -->  00:01:04,220
+that we are dealing with a one-to-many relationship.
+
+16
+
+00:01:04,220  -->  00:01:08,780
+Okay, so why am I talking about relational
+databases all of a sudden?
+
+17
+
+00:01:08,780  -->  00:01:13,200
+Because most developers are familiar with
+relational databases, and I want to tell you
+
+18
+
+00:01:13,210  -->  00:01:17,200
+that this is not how you go about storing
+data in Elasticsearch.
+
+19
+
+00:01:17,200  -->  00:01:21,980
+In Elasticsearch, you generally denormalize
+your data whenever possible, because that
+
+20
+
+00:01:21,980  -->  00:01:28,100
+leads to the best performance, so kind of the opposite of what you would do in a relational database.
+
+21
+
+00:01:28,100  -->  00:01:32,620
+To give you a comparison, how you store data
+in Elasticsearch is close to how you would
+
+22
+
+00:01:32,630  -->  00:01:38,650
+store data in a NoSQL database such as MongoDB
+where you either don’t join data at all,
+
+23
+
+00:01:38,650  -->  00:01:41,180
+or do it at the application level.
+
+24
+
+00:01:41,180  -->  00:01:45,660
+But isn’t storing data in a denormalized
+way inefficient, you might wonder?
+
+25
+
+00:01:45,660  -->  00:01:50,080
+Won’t we be wasting disk space by storing
+the city name for each department instead
+
+26
+
+00:01:50,080  -->  00:01:54,300
+of having a foreign key point to it and thereby
+only store it one time?
+
+27
+
+00:01:54,300  -->  00:01:59,110
+Yes, that’s true, but remember that it’s
+generally not recommended to use Elasticsearch
+
+28
+
+00:01:59,110  -->  00:02:01,119
+as a primary data store.
+
+29
+
+00:02:01,120  -->  00:02:06,260
+By not doing this, we have the freedom to
+store data however we want within Elasticsearch,
+
+30
+
+00:02:06,260  -->  00:02:10,320
+i.e. in ways that are optimized for quickly
+searching for data.
+
+31
+
+00:02:10,330  -->  00:02:15,260
+So in this case, it might be perfectly fine
+to sacrifice disk space to increase the performance
+
+32
+
+00:02:15,260  -->  00:02:18,400
+and throughput of the Elasticsearch cluster.
+
+33
+
+00:02:18,400  -->  00:02:23,330
+Elasticsearch doesn’t support joins like
+relational databases do, but it does support
+
+34
+
+00:02:23,330  -->  00:02:26,150
+some simple ways of joining documents.
+
+35
+
+00:02:26,150  -->  00:02:30,650
+It has to be said, though, that these queries
+are pretty inefficient, so that might be worth
+
+36
+
+00:02:30,650  -->  00:02:34,110
+keeping in mind when dealing with lots of
+documents.
+
+37
+
+00:02:34,110  -->  00:02:38,280
+So how can we map and query document relationships
+in Elasticsearch?
+
+38
+
+00:02:38,280  -->  00:02:42,680
+Let’s take a look at which tools we have
+at our disposal in the following lectures.

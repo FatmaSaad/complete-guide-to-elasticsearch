@@ -1,0 +1,902 @@
+1
+
+00:00:02,680  -->  00:00:08,320
+Alright, so as we talked about in the previous
+lecture, changing how documents are mapped
+
+2
+
+00:00:08,320  -->  00:00:10,980
+usually requires reindexing documents.
+
+3
+
+00:00:12,200  -->  00:00:17,260
+The first step is to create a new index and
+define the new mapping and optionally any
+
+4
+
+00:00:17,270  -->  00:00:18,340
+index settings.
+
+5
+
+00:00:19,320  -->  00:00:24,040
+Let’s create an updated version of the “reviews”
+index where the “product_id” field is
+
+6
+
+00:00:24,080  -->  00:00:25,500
+of the “keyword” data type.
+
+7
+
+00:00:32,520  -->  00:00:36,960
+To save some typing, let’s retrieve the
+current mapping and copy/paste that into
+
+8
+
+00:00:37,040  -->  00:00:37,880
+the query.
+
+9
+
+00:00:59,920  -->  00:01:02,719
+All 
+we need to do now is to modify the data type
+
+10
+
+00:01:02,720  -->  00:01:04,180
+for the “product_id” field.
+
+11
+
+00:01:10,560  -->  00:01:11,620
+That’s it.
+
+12
+
+00:01:11,780  -->  00:01:12,600
+Let’s run the query.
+
+13
+
+00:01:15,460  -->  00:01:19,900
+The index has now been created and we are
+ready to add documents to it.
+
+14
+
+00:01:19,900  -->  00:01:21,360
+But how do we do that?
+
+15
+
+00:01:21,900  -->  00:01:27,340
+We could write a script that retrieves documents
+from the old index, modifies them in one way
+
+16
+
+00:01:27,340  -->  00:01:30,360
+or another, and then indexes them into the
+new index.
+
+17
+
+00:01:31,640  -->  00:01:37,160
+That takes quite a bit of work, especially
+if we want to reindex a large number of documents.
+
+18
+
+00:01:37,780  -->  00:01:44,360
+Instead, Elasticsearch exposes a convenient
+API specific to this purpose, namely the Reindex
+
+19
+
+00:01:44,520  -->  00:01:45,360
+API.
+
+20
+
+00:01:46,040  -->  00:01:51,160
+This API does the heavy lifting of moving
+documents from one index to another so that
+
+21
+
+00:01:51,340  -->  00:01:52,300
+we don’t have to.
+
+22
+
+00:01:52,840  -->  00:01:58,099
+That’s because reindexing documents is actually
+a pretty common thing to do during the lifetime
+
+23
+
+00:01:58,100  -->  00:01:58,960
+of an index.
+
+24
+
+00:02:00,560  -->  00:02:05,860
+Business requirements may change, or perhaps
+we need to tweak how data is stored when scaling
+
+25
+
+00:02:05,860  -->  00:02:09,100
+from thousands to hundreds of millions of
+documents.
+
+26
+
+00:02:09,840  -->  00:02:14,100
+Whatever the case, let’s begin typing out
+the query that moves documents from the old
+
+27
+
+00:02:14,180  -->  00:02:15,820
+index into the new one.
+
+28
+
+00:02:18,980  -->  00:02:23,700
+The HTTP verb is “POST” and the endpoint
+is simply “_reindex.”
+
+29
+
+00:02:28,940  -->  00:02:34,140
+We will need to define two parameters named
+“source” and “dest,” both being objects.
+
+30
+
+00:02:35,020  -->  00:02:36,960
+Let’s add those to the request body.
+
+31
+
+00:02:43,500  -->  00:02:47,940
+The “source” parameter defines where the
+documents should be retrieved from and how
+
+32
+
+00:02:48,020  -->  00:02:49,100
+to retrieve them.
+
+33
+
+00:02:49,660  -->  00:02:54,000
+For now, let’s just define the index name
+within a parameter named “index.”
+
+34
+
+00:03:02,820  -->  00:03:08,500
+Next, let’s define where the documents should
+be stored, which we also specify with an “index”
+
+35
+
+00:03:08,660  -->  00:03:11,380
+parameter, this time within 
+the “dest” parameter.
+
+36
+
+00:03:21,300  -->  00:03:24,100
+That’s the basic query for reindexing documents.
+
+37
+
+00:03:24,580  -->  00:03:26,240
+Let’s run it and see what happens.
+
+38
+
+00:03:29,120  -->  00:03:34,080
+Everything appears to have worked, and the
+results state that five documents were reindexed.
+
+39
+
+00:03:34,720  -->  00:03:39,080
+Let’s retrieve the documents within the
+new index to verify that everything looks index.
+
+40
+
+00:03:48,400  -->  00:03:50,480
+Indeed the five documents are returned.
+
+41
+
+00:03:51,260  -->  00:03:56,620
+At a glance, everything looks good, but if
+we take a closer look, notice how the values
+
+42
+
+00:03:56,620  -->  00:04:00,020
+for the “product_id” field are numeric
+and not strings.
+
+43
+
+00:04:01,360  -->  00:04:06,660
+To be clear, this has no effect on how the
+values are indexed - specifically in regards
+
+44
+
+00:04:06,860  -->  00:04:08,280
+to the inverted index.
+
+45
+
+00:04:08,780  -->  00:04:12,580
+This is only a cosmetic thing within the “_source”
+object.
+
+46
+
+00:04:13,460  -->  00:04:18,280
+Remember that this object contains the original
+values that were supplied at index time.
+
+47
+
+00:04:18,800  -->  00:04:23,580
+Us changing the data type doesn’t cause
+the “_source” object to be modified.
+
+48
+
+00:04:24,640  -->  00:04:29,560
+However, when performing search requests,
+you will typically grab field values from
+
+49
+
+00:04:29,560  -->  00:04:34,229
+the “_source” object, and it would be
+fair to assume that you would get a string
+
+50
+
+00:04:34,229  -->  00:04:35,980
+value back for a “keyword” field.
+
+51
+
+00:04:36,820  -->  00:04:42,300
+That’s why it might be a good idea to modify
+the source document while reindexing the documents.
+
+52
+
+00:04:43,260  -->  00:04:48,220
+Alternatively you can just convert the data
+type within whatever application is querying
+
+53
+
+00:04:48,220  -->  00:04:53,260
+the index, but I prefer for Elasticsearch
+to return the expected data type.
+
+54
+
+00:04:54,820  -->  00:04:59,860
+The way that we can modify documents during
+reindexing, is to supply a script that is
+
+55
+
+00:04:59,860  -->  00:05:01,220
+run for each document.
+
+56
+
+00:05:01,820  -->  00:05:05,320
+I will just paste in a query with the script
+to save a bit of typing.
+
+57
+
+00:05:10,240  -->  00:05:14,300
+The script is defined within a “source”
+parameter, which is nested within the “script”
+
+58
+
+00:05:14,480  -->  00:05:15,280
+parameter.
+
+59
+
+00:05:16,500  -->  00:05:21,220
+We haven’t talked much about scripting yet,
+although you have seen some simple examples
+
+60
+
+00:05:21,300  -->  00:05:22,120
+earlier.
+
+61
+
+00:05:23,260  -->  00:05:26,300
+That’s why this example is also a very simple
+one.
+
+62
+
+00:05:27,120  -->  00:05:30,680
+It checks if the “product_id” field is
+defined within the source document, first
+
+63
+
+00:05:30,760  -->  00:05:31,420
+of all.
+
+64
+
+00:05:32,560  -->  00:05:37,340
+That’s because our reviews didn’t contain
+a product ID from the beginning, so one of
+
+65
+
+00:05:37,340  -->  00:05:39,640
+our documents does not contain this field.
+
+66
+
+00:05:40,480  -->  00:05:44,860
+If we left out this check, we would get a
+NullPointerException for that document.
+
+67
+
+00:05:46,280  -->  00:05:51,240
+Anyway, the following line simply replaces
+the value of the “product_id” field within
+
+68
+
+00:05:51,240  -->  00:05:55,060
+the source document with the existing value
+converted to a string.
+
+69
+
+00:05:56,440  -->  00:06:00,880
+Let’s delete the documents within the new
+index and reindex the documents again.
+
+70
+
+00:06:01,560  -->  00:06:04,460
+To do that, we will use the Delete by Query
+API.
+
+71
+
+00:06:05,180  -->  00:06:09,100
+I have prepared the query in advance, so let’s
+just go ahead and run it.
+
+72
+
+00:06:13,500  -->  00:06:16,020
+Now 
+that the documents have been reindexed once
+
+73
+
+00:06:23,280  -->  00:06:27,380
+again, let’s verify that the product IDs
+have been converted to strings within the
+
+74
+
+00:06:27,460  -->  00:06:28,780
+“_source” object.
+
+75
+
+00:06:34,540  -->  00:06:35,620
+And indeed they have.
+
+76
+
+00:06:36,020  -->  00:06:36,640
+Awesome!
+
+77
+
+00:06:38,140  -->  00:06:42,360
+Alright, let me show you a couple of slightly
+more advanced use cases.
+
+78
+
+00:06:42,820  -->  00:06:46,760
+We’ll be leaving Kibana for this, because
+I don’t want to spend a lot of time typing
+
+79
+
+00:06:46,760  -->  00:06:49,780
+out queries when I can just show them to you
+on a slide.
+
+80
+
+00:06:50,740  -->  00:06:55,360
+If you want to take them for a spin, by all
+means go ahead and run them within Kibana.
+
+81
+
+00:06:55,820  -->  00:06:59,400
+You can find the queries within the GitHub
+repository so that you can copy and paste
+
+82
+
+00:06:59,540  -->  00:07:00,080
+them.
+
+83
+
+00:07:01,800  -->  00:07:06,600
+The first thing I will show you is that we
+can specify a query within the “source”
+
+84
+
+00:07:06,600  -->  00:07:09,940
+parameter to only reindex documents that match
+the query.
+
+85
+
+00:07:11,200  -->  00:07:15,740
+That’s useful if we only want to reindex
+a subset of the documents that are stored
+
+86
+
+00:07:15,740  -->  00:07:17,020
+within the source index.
+
+87
+
+00:07:18,640  -->  00:07:22,600
+Since we haven’t covered search queries
+yet, I have just specified the “match_all”
+
+88
+
+00:07:22,820  -->  00:07:23,440
+query.
+
+89
+
+00:07:23,840  -->  00:07:28,240
+That doesn’t really make sense because that’s
+the same as not specifying a query.
+
+90
+
+00:07:29,080  -->  00:07:33,820
+Let’s make it a bit more interesting and
+meaningful by specifying a query that matches
+
+91
+
+00:07:33,840  -->  00:07:36,780
+reviews with a rating of at least 4.0.
+
+92
+
+00:07:38,440  -->  00:07:43,580
+Don’t worry about the specifics of the query,
+although it’s actually pretty straightforward.
+
+93
+
+00:07:44,320  -->  00:07:50,080
+Running this reindex query would only reindex
+reviews with a rating of at least 4.0.
+
+94
+
+00:07:50,600  -->  00:07:51,580
+Pretty cool, right?
+
+95
+
+00:07:53,380  -->  00:07:56,040
+Next, suppose that we want to remove a field.
+
+96
+
+00:07:56,800  -->  00:08:01,360
+As you know, we cannot delete a field mapping,
+so that is not an option.
+
+97
+
+00:08:02,360  -->  00:08:07,100
+As you also know, we can just leave out the
+field when indexing new documents and leave
+
+98
+
+00:08:07,260  -->  00:08:08,380
+things as is.
+
+99
+
+00:08:09,600  -->  00:08:15,320
+However, if we have indexed lots of documents,
+perhaps we want to reclaim the disk space
+
+100
+
+00:08:15,420  -->  00:08:16,700
+used by the field.
+
+101
+
+00:08:17,520  -->  00:08:22,919
+Remember that even though we stop supplying
+a value for a field when indexing new documents,
+
+102
+
+00:08:22,920  -->  00:08:26,700
+the existing values are still maintained within
+a data structure.
+
+103
+
+00:08:27,820  -->  00:08:32,760
+Depending on how many values have been indexed,
+this may use a considerable amount of disk
+
+104
+
+00:08:32,800  -->  00:08:35,100
+space that we could use for other things.
+
+105
+
+00:08:36,500  -->  00:08:40,700
+That’s of course assuming that we won’t
+need to query these values in the future.
+
+106
+
+00:08:41,960  -->  00:08:45,900
+The way we can do this is to use so-called
+“source filtering.”
+
+107
+
+00:08:47,000  -->  00:08:52,380
+By specifying an array of field names, only
+those fields are included for each document
+
+108
+
+00:08:52,380  -->  00:08:55,060
+when they are indexed into the destination
+index.
+
+109
+
+00:08:55,800  -->  00:09:00,240
+In other words, any fields that you leave
+out will not be reindexed.
+
+110
+
+00:09:00,980  -->  00:09:05,940
+It’s possible to do the same thing with
+a script, but using the “_source” parameter
+
+111
+
+00:09:06,120  -->  00:09:07,700
+is a simpler approach.
+
+112
+
+00:09:09,760  -->  00:09:14,560
+Sometimes you might want to rename a field,
+such as renaming the “content” field to
+
+113
+
+00:09:14,760  -->  00:09:15,500
+“comment.”
+
+114
+
+00:09:16,200  -->  00:09:19,560
+That can be done with a script consisting
+of just one statement.
+
+115
+
+00:09:21,200  -->  00:09:26,220
+In case you were wondering, the “_source”
+key translates to a Java HashMap.
+
+116
+
+00:09:27,120  -->  00:09:32,480
+Besides removing a key, the “remove” method
+also returns its value, which is why the assignment
+
+117
+
+00:09:32,780  -->  00:09:33,980
+works.
+
+118
+
+00:09:36,240  -->  00:09:41,300
+Just as with scripted updates, it’s possible
+to specify the operation for the document
+
+119
+
+00:09:41,420  -->  00:09:42,560
+within the script.
+
+120
+
+00:09:43,460  -->  00:09:48,680
+That’s done by assigning a value to the
+“op” property on the “ctx” variable.
+
+121
+
+00:09:49,380  -->  00:09:52,780
+You can assign a value of either “noop”
+or “delete.”
+
+122
+
+00:09:54,140  -->  00:09:59,520
+In the case of “noop,” the document will
+not be indexed into the destination index.
+
+123
+
+00:10:00,340  -->  00:10:05,160
+This is useful if you have some advanced logic
+to determine whether or not you need to reindex
+
+124
+
+00:10:05,340  -->  00:10:06,320
+documents.
+
+125
+
+00:10:07,260  -->  00:10:12,700
+In this example we only reindex reviews with
+a rating of at least 4.0.
+
+126
+
+00:10:14,420  -->  00:10:19,760
+Note that it will usually be enough to define
+a query that matches the documents, but for
+
+127
+
+00:10:19,940  -->  00:10:23,200
+advanced use cases that might not always be
+possible.
+
+128
+
+00:10:24,340  -->  00:10:28,780
+In this particular example, we could just
+as well have defined a query that expresses
+
+129
+
+00:10:28,940  -->  00:10:32,580
+this constraint, which you actually saw how
+to do earlier.
+
+130
+
+00:10:33,840  -->  00:10:39,520
+That approach is actually much better in terms
+of performance, so you should always prefer
+
+131
+
+00:10:39,520  -->  00:10:41,900
+specifying a query whenever possible.
+
+132
+
+00:10:43,720  -->  00:10:48,320
+Setting the operation to “delete” causes
+the document to be deleted within the destination
+
+133
+
+00:10:48,560  -->  00:10:49,520
+index.
+
+134
+
+00:10:50,380  -->  00:10:55,000
+This can be useful because the document might
+already exist within that index.
+
+135
+
+00:10:56,060  -->  00:11:01,780
+In this lecture we reindexed documents into
+an empty index, but that might not always
+
+136
+
+00:11:01,780  -->  00:11:07,540
+be the case; there is nothing preventing us
+from using the Reindex API to move documents
+
+137
+
+00:11:07,720  -->  00:11:09,440
+into a non-empty index.
+
+138
+
+00:11:10,720  -->  00:11:15,920
+The API is just typically used for new indices
+when changing mappings, but it is not limited
+
+139
+
+00:11:16,100  -->  00:11:17,900
+to just that use case.
+
+140
+
+00:11:18,880  -->  00:11:23,720
+That being said, you can typically achieve
+the same thing by using the Delete by Query
+
+141
+
+00:11:23,880  -->  00:11:24,980
+API instead.
+
+142
+
+00:11:26,880  -->  00:11:30,960
+There are more parameters available for the
+Reindex API than the ones we covered in this
+
+143
+
+00:11:31,120  -->  00:11:32,040
+lecture.
+
+144
+
+00:11:32,600  -->  00:11:37,680
+For example, you can define how to handle
+version conflicts, just as with the Update
+
+145
+
+00:11:37,680  -->  00:11:38,890
+by Query API.
+
+146
+
+00:11:39,640  -->  00:11:45,160
+That’s because the Reindex API also makes
+a snapshot of the index before indexing documents
+
+147
+
+00:11:45,160  -->  00:11:46,860
+into the destination index.
+
+148
+
+00:11:48,200  -->  00:11:52,840
+By default, the operation is aborted if a
+version conflict is encountered.
+
+149
+
+00:11:53,700  -->  00:11:58,380
+That’s fine when the destination index is
+empty, but that might not be the case.
+
+150
+
+00:12:00,220  -->  00:12:06,180
+Just like the Update by Query and Delete by
+Query APIs, the Reindex API also performs
+
+151
+
+00:12:06,300  -->  00:12:09,820
+the operations in batches by using the Scroll
+API.
+
+152
+
+00:12:11,020  -->  00:12:15,240
+That’s essentially how it’s able to handle
+millions of documents efficiently.
+
+153
+
+00:12:15,860  -->  00:12:20,660
+You can define parameters that are related
+to throttling and limiting the number of requests
+
+154
+
+00:12:20,660  -->  00:12:21,380
+per second.
+
+155
+
+00:12:22,420  -->  00:12:27,440
+That’s useful if you need to reindex a lot
+of documents on a production cluster and you
+
+156
+
+00:12:27,440  -->  00:12:29,460
+want to limit the performance impact.
+
+157
+
+00:12:30,700  -->  00:12:34,900
+Anyway, that all becomes more complicated
+than what I want to cover here.
+
+158
+
+00:12:35,560  -->  00:12:41,020
+The point is that if you intend to use this
+API for millions of documents at once, then
+
+159
+
+00:12:41,560  -->  00:12:45,540
+I recommend that you take a look at the documentation
+attached to this lecture.

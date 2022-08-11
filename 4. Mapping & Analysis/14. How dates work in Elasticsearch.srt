@@ -1,0 +1,422 @@
+1
+
+00:00:02,300  -->  00:00:04,160
+We just added a “date” field mapping.
+
+2
+
+00:00:04,980  -->  00:00:10,980
+Before indexing a document with this new field,
+let’s talk a bit about how Elasticsearch handles dates.
+
+3
+
+00:00:12,040  -->  00:00:18,060
+Dates may be specified in one of three ways;
+specially formatted strings, a long number
+
+4
+
+00:00:18,060  -->  00:00:22,900
+representing the number of milliseconds since
+the epoch, or an integer representing the
+
+5
+
+00:00:22,900  -->  00:00:24,800
+number of seconds since the epoch.
+
+6
+
+00:00:25,820  -->  00:00:29,080
+The latter is also referred to as a UNIX timestamp.
+
+7
+
+00:00:29,540  -->  00:00:33,960
+As you might know, epoch refers to the 1st
+of January 1970.
+
+8
+
+00:00:35,280  -->  00:00:40,440
+It is possible to specify custom date formats,
+but we will look at that a bit later in this section.
+
+9
+
+00:00:41,060  -->  00:00:46,660
+Instead, let’s take a look at how “date”
+fields behave by default, i.e. when no custom
+
+10
+
+00:00:46,660  -->  00:00:48,040
+format is specified.
+
+11
+
+00:00:49,140  -->  00:00:55,120
+Elasticsearch expects one of three formats;
+a date without time, a date with time, or
+
+12
+
+00:00:55,120  -->  00:00:58,560
+a long representing the number of milliseconds
+since the epoch.
+
+13
+
+00:00:59,760  -->  00:01:04,640
+In the case of string timestamps, these are
+assumed to be in the UTC timezone if none
+
+14
+
+00:01:04,640  -->  00:01:05,860
+is specified.
+
+15
+
+00:01:07,240  -->  00:01:12,620
+If you supply a string value, the date needs
+to be in the ISO 8601 format.
+
+16
+
+00:01:13,700  -->  00:01:18,920
+This is the most standard date format and
+what is generally used besides numeric timestamps.
+
+17
+
+00:01:19,360  -->  00:01:24,220
+In case you are not familiar with the format,
+I will show you a couple of examples in a moment.
+
+18
+
+00:01:25,040  -->  00:01:29,600
+I have attached a link to a page that explains
+the format, so I encourage you to check that
+
+19
+
+00:01:29,600  -->  00:01:31,400
+out if you are not familiar with it.
+
+20
+
+00:01:32,940  -->  00:01:38,100
+Alright, so those were the basics of how dates
+should be specified within documents - at
+
+21
+
+00:01:38,100  -->  00:01:40,520
+least when using the default date format.
+
+22
+
+00:01:41,200  -->  00:01:44,640
+Let’s talk a bit about how dates are stored
+within Elasticsearch.
+
+23
+
+00:01:45,900  -->  00:01:50,840
+Dates are stored as a long number representing
+the number of milliseconds since the epoch.
+
+24
+
+00:01:51,440  -->  00:01:58,000
+Even if you supply a string date, Elasticsearch will parse it and convert it to a long number for storage.
+
+25
+
+00:01:59,120  -->  00:02:02,580
+You can see that on the diagram, where a document
+is indexed.
+
+26
+
+00:02:03,100  -->  00:02:07,520
+The value of the “created_at” field is
+converted into a long number, which is the
+
+27
+
+00:02:07,520  -->  00:02:08,820
+value that is stored.
+
+28
+
+00:02:10,100  -->  00:02:15,460
+If a date includes a timezone, Elasticsearch
+will convert the date to UTC first.
+
+29
+
+00:02:16,240  -->  00:02:20,980
+All queries are then run against this long
+number, giving Elasticsearch a uniform way
+
+30
+
+00:02:20,980  -->  00:02:25,220
+of working with dates, regardless of which
+date formats are used.
+
+31
+
+00:02:26,280  -->  00:02:32,320
+The date conversion will also happen for search
+queries; suppose that we send a query to match
+
+32
+
+00:02:32,320  -->  00:02:36,560
+reviews written after a given date and we
+supply the date as a string.
+
+33
+
+00:02:37,180  -->  00:02:41,940
+This date will then be converted to a long
+number before the search process begins.
+
+34
+
+00:02:43,460  -->  00:02:47,920
+Alright, now that you know the basics of how
+dates are handled, let’s index a couple
+
+35
+
+00:02:47,920  -->  00:02:48,920
+of documents.
+
+36
+
+00:02:49,340  -->  00:02:53,640
+I have prepared the queries in advance to
+save some typing, so let’s go through them
+
+37
+
+00:02:53,640  -->  00:02:57,480
+one by one, as each of them uses a different
+date format.
+
+38
+
+00:02:58,700  -->  00:03:03,880
+The first query only specifies a date, meaning
+that the time of day has been left out.
+
+39
+
+00:03:04,580  -->  00:03:09,260
+Typically you will include the time as well,
+but you don’t have to if you don’t need it.
+
+40
+
+00:03:10,440  -->  00:03:13,840
+An example could be to store the date of birth
+of a person.
+
+41
+
+00:03:14,460  -->  00:03:19,800
+When only a date is specified, Elasticsearch
+will just assume the time to be at midnight
+
+42
+
+00:03:19,800  -->  00:03:23,580
+and then convert the date to the number of
+milliseconds since the epoch.
+
+43
+
+00:03:29,540  -->  00:03:33,380
+The second query does include the time of
+day as well.
+
+44
+
+00:03:33,390  -->  00:03:38,310
+Notice how the date and time is separated
+by the letter “T” in order to be compatible
+
+45
+
+00:03:38,310  -->  00:03:41,240
+with the ISO 8601 specification.
+
+46
+
+00:03:41,760  -->  00:03:43,780
+It also ends with the letter “Z.”
+
+47
+
+00:03:44,360  -->  00:03:45,740
+So what does that mean?
+
+48
+
+00:03:46,460  -->  00:03:48,700
+That’s the timezone part of the date.
+
+49
+
+00:03:49,680  -->  00:03:53,360
+“Z” simply means that the date is in the
+UTC timezone.
+
+50
+
+00:03:54,020  -->  00:03:58,880
+This wasn’t specified explicitly in the
+first query, because no time was provided,
+
+51
+
+00:03:58,920  -->  00:04:02,360
+and so the date was assumed to be in the UTC
+timezone.
+
+52
+
+00:04:06,940  -->  00:04:09,960
+But what if the date is not in UTC?
+
+53
+
+00:04:10,440  -->  00:04:15,160
+In that case the UTC offset can be specified
+instead of “Z.”
+
+54
+
+00:04:16,000  -->  00:04:21,660
+In this example I have specified that the
+timestamp is offset by one hour compared to UTC.
+
+55
+
+00:04:22,760  -->  00:04:27,900
+Elasticsearch will then take this into account
+when converting the timestamp to a long value.
+
+56
+
+00:04:32,000  -->  00:04:37,920
+The last option is to specify a long number representing the number of milliseconds since the epoch.
+
+57
+
+00:04:38,380  -->  00:04:43,580
+It’s really important that you don’t specify
+a UNIX timestamp here, i.e. the number of
+
+58
+
+00:04:43,580  -->  00:04:45,120
+seconds since the epoch.
+
+59
+
+00:04:45,780  -->  00:04:50,240
+If you do that, Elasticsearch won’t give
+you an error because it will just treat the
+
+60
+
+00:04:50,240  -->  00:04:53,040
+number as the number of milliseconds since
+the epoch.
+
+61
+
+00:04:53,980  -->  00:04:58,780
+You might then think that everything is okay,
+since the documents are indexed correctly.
+
+62
+
+00:04:59,240  -->  00:05:04,420
+However, when you search for documents within
+a given date range, you won’t get any matches,
+
+63
+
+00:05:04,480  -->  00:05:07,100
+because the dates are actually way in the
+past.
+
+64
+
+00:05:08,080  -->  00:05:13,060
+If you do have a UNIX timestamp, then be sure
+to multiply that number by 1,000.
+
+65
+
+00:05:13,780  -->  00:05:16,060
+Anyway, let’s index this document as well.
+
+66
+
+00:05:20,520  -->  00:05:25,280
+I also have the simplest possible search query
+prepared, so let’s run that one as well.
+
+67
+
+00:05:26,000  -->  00:05:29,660
+Keep an eye on the “created_at” field
+as I scroll through the results.
+
+68
+
+00:05:33,920  -->  00:05:39,340
+The values are the exact values that we specified
+when indexing the documents, and they do not
+
+69
+
+00:05:39,340  -->  00:05:41,600
+represent how dates are stored for searching.
+
+70
+
+00:05:42,380  -->  00:05:48,140
+You also saw this in the context of type coercion;
+the concept is the same, so just consider
+
+71
+
+00:05:48,140  -->  00:05:49,600
+this a small reminder.
+
+72
+
+00:05:50,920  -->  00:05:54,180
+Those were the basics of how dates are handled
+in Elasticsearch.
+
+73
+
+00:05:54,800  -->  00:05:59,460
+Later in the course, you will learn how to
+use dates in search queries, and how to work
+
+74
+
+00:05:59,460  -->  00:06:01,520
+with relative dates and date math.

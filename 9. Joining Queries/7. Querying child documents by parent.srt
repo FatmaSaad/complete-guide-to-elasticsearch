@@ -1,0 +1,683 @@
+1
+1
+
+00:00:02,500  -->  00:00:03,840
+You just saw how to retrieve
+2
+
+2
+
+00:00:03,840  -->  00:00:06,430
+child documents belonging to a parent document
+3
+
+3
+
+00:00:06,430  -->  00:00:10,160
+based on its ID. That might not always be enough, though
+4
+
+4
+
+00:00:10,160  -->  00:00:12,980
+because you might not know the parent document's ID,
+5
+
+5
+
+00:00:12,980  -->  00:00:15,030
+or maybe you want to add some other conditions
+6
+
+6
+
+00:00:15,030  -->  00:00:17,130
+other than the document ID.
+7
+
+7
+
+00:00:17,130  -->  00:00:20,755
+This can be accomplished with a query named has_parent.
+8
+
+8
+
+00:00:21,480  -->  00:00:24,530
+This query lets you define a query that a parent document
+9
+
+9
+
+00:00:24,530  -->  00:00:27,820
+should match for a child document to be returned.
+10
+
+10
+
+00:00:27,820  -->  00:00:30,880
+In other words, the query returns the child documents
+11
+
+11
+
+00:00:30,880  -->  00:00:33,900
+where the parent document matches some criteria.
+12
+
+12
+
+00:00:33,900  -->  00:00:36,030
+Let's see it in action, shall we?
+13
+
+13
+
+00:00:36,030  -->  00:00:37,590
+Let's first add the name of the query
+14
+
+14
+
+00:00:37,590  -->  00:00:42,472
+and an empty object as the value, so has_parents
+15
+
+15
+
+00:00:43,474  -->  00:00:45,400
+and an empty object.
+16
+
+16
+
+00:00:45,400  -->  00:00:47,720
+The first thing we need to do within this object,
+17
+
+17
+
+00:00:47,720  -->  00:00:49,830
+is to specify the parent relation name
+18
+
+18
+
+00:00:49,830  -->  00:00:52,860
+with an option named parent_type.
+19
+
+19
+
+00:00:52,860  -->  00:00:55,360
+Since we'll be adding conditions to departments
+20
+
+20
+
+00:00:55,360  -->  00:00:57,820
+the relation name will be department.
+21
+
+21
+
+00:00:57,820  -->  00:01:00,475
+So parents_type
+22
+
+22
+
+00:01:01,610  -->  00:01:04,240
+and department as the value.
+23
+
+23
+
+00:01:04,240  -->  00:01:06,710
+Next, we need to specify the conditions
+24
+
+24
+
+00:01:06,710  -->  00:01:09,550
+that the parent document must satisfy.
+25
+
+25
+
+00:01:09,550  -->  00:01:12,183
+We do this within an option named query.
+26
+
+26
+
+00:01:15,640  -->  00:01:19,730
+As you might have guessed, we can specify any query in here.
+27
+
+27
+
+00:01:19,730  -->  00:01:23,170
+So any query that you have seen until now will work.
+28
+
+28
+
+00:01:23,170  -->  00:01:25,570
+What I'll do in this case is start a term query
+29
+
+29
+
+00:01:25,570  -->  00:01:28,630
+matching the development department by name.
+30
+
+30
+
+00:01:28,630  -->  00:01:30,270
+That's the only field we have to work with
+31
+
+31
+
+00:01:30,270  -->  00:01:32,570
+for the departments, but you can use any other field
+32
+
+32
+
+00:01:32,570  -->  00:01:35,870
+that you might have available for your parent documents.
+33
+
+33
+
+00:01:35,870  -->  00:01:38,550
+So let's get started typing that out,
+34
+
+34
+
+00:01:38,550  -->  00:01:41,130
+so I'll use the term query like I said
+35
+
+35
+
+00:01:41,130  -->  00:01:44,120
+and let's simplify the syntax here.
+36
+
+36
+
+00:01:44,120  -->  00:01:47,820
+So the field will be name and I'll use the keyword mapping
+37
+
+37
+
+00:01:48,740  -->  00:01:51,253
+and the value to search for will be development.
+38
+
+38
+
+00:01:52,630  -->  00:01:55,473
+Let's go ahead and run the query and see what happens.
+39
+
+39
+
+00:01:59,040  -->  00:02:00,920
+Looking at the results, we can see that
+40
+
+40
+
+00:02:00,920  -->  00:02:04,590
+the matching documents belong to a parent with an ID of one,
+41
+
+41
+
+00:02:04,590  -->  00:02:07,520
+which corresponds to the development department.
+42
+
+42
+
+00:02:07,520  -->  00:02:10,470
+Like I said before, you could add a query of any complexity
+43
+
+43
+
+00:02:10,470  -->  00:02:12,913
+here if you wanted to, such as the bool query.
+44
+
+44
+
+00:02:13,870  -->  00:02:16,150
+All right, so we just successfully retrieved
+45
+
+45
+
+00:02:16,150  -->  00:02:18,650
+the employees for the development department.
+46
+
+46
+
+00:02:18,650  -->  00:02:20,430
+So far so good.
+47
+
+47
+
+00:02:20,430  -->  00:02:23,980
+Although that's already some quite powerful functionality,
+48
+
+48
+
+00:02:23,980  -->  00:02:27,600
+the has_parent query can do more than that.
+49
+
+49
+
+00:02:27,600  -->  00:02:29,360
+One of the things that I'm going to show you,
+50
+
+50
+
+00:02:29,360  -->  00:02:32,230
+is how it supports relevance scoring.
+51
+
+51
+
+00:02:32,230  -->  00:02:35,110
+By default, the query ignores the relevance score
+52
+
+52
+
+00:02:35,110  -->  00:02:37,140
+from the matching parent document,
+53
+
+53
+
+00:02:37,140  -->  00:02:39,640
+meaning that how well the parent document matches
+54
+
+54
+
+00:02:39,640  -->  00:02:41,530
+has no affect on the relevance scores
+55
+
+55
+
+00:02:41,530  -->  00:02:43,400
+of the child documents.
+56
+
+56
+
+00:02:43,400  -->  00:02:46,260
+The default behavior is that a flat score of one
+57
+
+57
+
+00:02:46,260  -->  00:02:49,660
+is added to the score of each matching child document.
+58
+
+58
+
+00:02:49,660  -->  00:02:51,160
+We can change this, however,
+59
+
+59
+
+00:02:51,160  -->  00:02:54,653
+by setting an option named score to true, so let's do that.
+60
+
+60
+
+00:02:56,210  -->  00:03:00,053
+So I'll add an option named score here and set it to true.
+61
+
+61
+
+00:03:00,900  -->  00:03:03,770
+Before running the query I want to direct your attention
+62
+
+62
+
+00:03:03,770  -->  00:03:06,970
+to the results from the previous query for a moment.
+63
+
+63
+
+00:03:06,970  -->  00:03:10,710
+Notice how all of the matches have a relevance score of one.
+64
+
+64
+
+00:03:10,710  -->  00:03:13,150
+This is the default behavior that I was talking about
+65
+
+65
+
+00:03:13,150  -->  00:03:15,470
+a moment ago, a flat score of one
+66
+
+66
+
+00:03:15,470  -->  00:03:17,210
+is applied to the matching documents
+67
+
+67
+
+00:03:17,210  -->  00:03:19,300
+from the matching parent document.
+68
+
+68
+
+00:03:19,300  -->  00:03:22,100
+Let's now run the modified query and see the difference.
+69
+
+69
+
+00:03:25,390  -->  00:03:27,840
+Notice how the relevance scores have now increased
+70
+
+70
+
+00:03:27,840  -->  00:03:30,160
+by approximately a third.
+71
+
+71
+
+00:03:30,160  -->  00:03:31,740
+This is because the relevance score
+72
+
+72
+
+00:03:31,740  -->  00:03:35,150
+of the matching parent document is now taken into account
+73
+
+73
+
+00:03:35,150  -->  00:03:38,690
+and this is reflected in the scores for the child documents.
+74
+
+74
+
+00:03:38,690  -->  00:03:41,150
+In other words, the relevance scores for the matches
+75
+
+75
+
+00:03:41,150  -->  00:03:43,890
+of the term query is used as the relevance score
+76
+
+76
+
+00:03:43,890  -->  00:03:45,680
+for the child documents.
+77
+
+77
+
+00:03:45,680  -->  00:03:47,460
+Hopefully that makes sense.
+78
+
+78
+
+00:03:47,460  -->  00:03:49,680
+And, it would make even more sense to do this
+79
+
+79
+
+00:03:49,680  -->  00:03:52,170
+if we were not searching for an exact value,
+80
+
+80
+
+00:03:52,170  -->  00:03:53,833
+but this is just an example.
+81
+
+81
+
+00:03:54,850  -->  00:03:57,240
+So why is this even relevant?
+82
+
+82
+
+00:03:57,240  -->  00:04:00,220
+I know I said parent document in singular,
+83
+
+83
+
+00:04:00,220  -->  00:04:02,590
+but that might not always be the case.
+84
+
+84
+
+00:04:02,590  -->  00:04:04,490
+There's nothing stopping the term query
+85
+
+85
+
+00:04:04,490  -->  00:04:06,310
+or whatever query is used
+86
+
+86
+
+00:04:06,310  -->  00:04:08,520
+from matching more than one document.
+87
+
+87
+
+00:04:08,520  -->  00:04:10,840
+Supposed that we had used the match query instead
+88
+
+88
+
+00:04:10,840  -->  00:04:12,810
+to search some text field.
+89
+
+89
+
+00:04:12,810  -->  00:04:14,840
+In this scenario the relevance scores
+90
+
+90
+
+00:04:14,840  -->  00:04:16,710
+would most likely differ quite a bit
+91
+
+91
+
+00:04:16,710  -->  00:04:18,750
+between the matched parent documents,
+92
+
+92
+
+00:04:18,750  -->  00:04:21,530
+depending on how well they match the query.
+93
+
+93
+
+00:04:21,530  -->  00:04:23,720
+By setting the score option to true,
+94
+
+94
+
+00:04:23,720  -->  00:04:25,650
+we ensure that the child documents
+95
+
+95
+
+00:04:25,650  -->  00:04:28,200
+belonging to the best matching parent document
+96
+
+96
+
+00:04:28,200  -->  00:04:31,110
+are scored the highest within the results.
+97
+
+97
+
+00:04:31,110  -->  00:04:33,740
+I admit that our query isn't the best for showing this,
+98
+
+98
+
+00:04:33,740  -->  00:04:35,460
+but I hope you understand the concept
+99
+
+99
+
+00:04:35,460  -->  00:04:39,000
+of applying the relevance score to child documents.
+100
+
+100
+
+00:04:39,000  -->  00:04:40,680
+If you need more control of how
+101
+
+101
+
+00:04:40,680  -->  00:04:42,620
+the child documents are sorted,
+102
+
+102
+
+00:04:42,620  -->  00:04:46,546
+you can do this by using a query named function_score.
+103
+
+103
+
+00:04:47,110  -->  00:04:49,350
+That's a query that we'll look at later in the course,
+104
+
+104
+
+00:04:49,350  -->  00:04:51,600
+so I won't get into that now.
+105
+
+105
+
+00:04:51,600  -->  00:04:54,280
+It's also not a very common thing to do.
+106
+
+106
+
+00:04:54,280  -->  00:04:56,020
+If you do need this behavior,
+107
+
+107
+
+00:04:56,020  -->  00:04:57,930
+then I have attached a link to an example
+108
+
+108
+
+00:04:57,930  -->  00:04:59,750
+of how you can do it.
+109
+
+109
+
+00:04:59,750  -->  00:05:01,700
+All right, that's it.
+110
+
+110
+
+00:05:01,700  -->  00:05:04,430
+As you can see, the has_parent query
+111
+
+111
+
+00:05:04,430  -->  00:05:07,630
+is more flexible than the parent_id query
+112
+
+112
+
+00:05:07,630  -->  00:05:11,000
+in cases where you don't know the ID of the parent document
+113
+
+113
+
+00:05:11,000  -->  00:05:12,420
+or when you're not just looking for
+114
+
+114
+
+00:05:12,420  -->  00:05:13,970
+a single parent document.

@@ -1,0 +1,305 @@
+1
+
+00:00:01,120  -->  00:00:06,200
+Now that you know how Elasticsearch handles
+modifying data in a replicated setup, let’s
+
+2
+
+00:00:06,200  -->  00:00:08,420
+see how it searches for data.
+
+3
+
+00:00:08,420  -->  00:00:12,540
+Let’s begin with what you will typically
+see as a developer running search queries
+
+4
+
+00:00:12,540  -->  00:00:14,960
+towards an Elasticsearch cluster.
+
+5
+
+00:00:14,960  -->  00:00:18,440
+You have some kind of client, which will often
+be a server.
+
+6
+
+00:00:18,440  -->  00:00:24,200
+That client communicates with the Elasticsearch
+cluster by sending search queries over HTTP.
+
+7
+
+00:00:24,200  -->  00:00:30,500
+The cluster then does its magic based on the index
+and query that you have specified in the HTTP request.
+
+8
+
+00:00:30,500  -->  00:00:35,420
+When the results are ready, the cluster responds
+with the results, and the client can use the
+
+9
+
+00:00:35,420  -->  00:00:37,800
+results for whatever purpose.
+
+10
+
+00:00:37,800  -->  00:00:40,860
+For a lot of people, that’s all they really
+need to know.
+
+11
+
+00:00:40,870  -->  00:00:45,399
+If you just need to run some queries against
+an Elasticsearch cluster, then this may be
+
+12
+
+00:00:45,400  -->  00:00:50,409
+sufficient for you, because in that case you
+are mostly concerned with writing the queries
+
+13
+
+00:00:50,409  -->  00:00:54,180
+and not how Elasticsearch gathers the results
+internally.
+
+14
+
+00:00:54,190  -->  00:00:58,280
+That being said, I have always been a fan
+of digging a bit deeper and understanding
+
+15
+
+00:00:58,280  -->  00:01:02,740
+the tools that you use, because this will
+often be helpful in the long run.
+
+16
+
+00:01:02,740  -->  00:01:08,360
+Let’s therefore take a peek inside the cluster
+and see what happens when it receives a search query.
+
+17
+
+00:01:08,360  -->  00:01:13,140
+Suppose we have a cluster consisting of three
+nodes containing one index distributed across
+
+18
+
+00:01:13,140  -->  00:01:20,820
+three shards - shard A, B and C. Each shard has
+two replicas, so each replication group consists
+
+19
+
+00:01:20,820  -->  00:01:23,810
+of a primary shard and two replicas.
+
+20
+
+00:01:23,810  -->  00:01:28,030
+Then suppose that a client sends a search
+query to the cluster which ends up on the
+
+21
+
+00:01:28,030  -->  00:01:30,320
+node containing Shard B.
+
+22
+
+00:01:30,320  -->  00:01:35,320
+This node is now the so-called "coordinating
+node," meaning that this node is responsible
+
+23
+
+00:01:35,320  -->  00:01:40,900
+for sending queries to other nodes, assembling
+the results and responding to the client.
+
+24
+
+00:01:40,900  -->  00:01:45,360
+So basically coordinating the query, hence
+the name “coordinating node.”
+
+25
+
+00:01:45,360  -->  00:01:52,560
+By default, every node may act as the coordinating
+node and may receive HTTP requests as I mentioned
+
+26
+
+00:01:52,560  -->  00:01:53,980
+a bit earlier.
+
+27
+
+00:01:53,980  -->  00:01:58,630
+Since the coordinating node itself contains
+a shard which should be searched, the node
+
+28
+
+00:01:58,630  -->  00:02:00,730
+will perform the query itself.
+
+29
+
+00:02:00,730  -->  00:02:05,070
+This may not be the case in other scenarios,
+but since we only have one index, this will
+
+30
+
+00:02:05,070  -->  00:02:06,970
+always be the case.
+
+31
+
+00:02:06,970  -->  00:02:11,609
+The coordinating node then broadcasts the
+request to every other shard in the index,
+
+32
+
+00:02:11,609  -->  00:02:15,069
+being either a primary shard or a replica
+shard.
+
+33
+
+00:02:15,069  -->  00:02:20,220
+In this example I have just shown that the
+primary shards receive the requests, i.e.
+
+34
+
+00:02:20,220  -->  00:02:25,380
+Shard A and C, but this could just as well
+have been replicas for the shards.
+
+35
+
+00:02:25,380  -->  00:02:30,880
+Also note that how the coordinating node determines
+which shards - and thereby nodes - the request
+
+36
+
+00:02:30,890  -->  00:02:35,280
+should be sent to, is outside the scope of
+this lecture, so that’s not something that
+
+37
+
+00:02:35,300  -->  00:02:37,380
+we will look at for now.
+
+38
+
+00:02:37,380  -->  00:02:42,200
+Right now, the important thing is to understand
+the flow of search queries, more than to understand
+
+39
+
+00:02:42,200  -->  00:02:43,830
+every detail.
+
+40
+
+00:02:43,830  -->  00:02:48,420
+When the other shards respond with each of
+their results, the coordinating node merges
+
+41
+
+00:02:48,420  -->  00:02:53,540
+them together and sorts them, and lastly returns
+the results to the client.
+
+42
+
+00:02:53,540  -->  00:02:57,680
+Just to quickly repeat the steps to make
+sure that it is clear.
+
+43
+
+00:02:57,680  -->  00:03:01,260
+A search query hits a given node within the
+cluster.
+
+44
+
+00:03:01,269  -->  00:03:04,720
+This node becomes the coordinating node for
+the query.
+
+45
+
+00:03:04,720  -->  00:03:09,469
+It broadcasts the request to all shards in
+the index that the query refers to.
+
+46
+
+00:03:09,469  -->  00:03:13,099
+This can be both primary shards and replica
+shards.
+
+47
+
+00:03:13,099  -->  00:03:17,519
+These shards then respond with the results,
+and the coordinating node will merge all of
+
+48
+
+00:03:17,519  -->  00:03:22,750
+the results together into a single result,
+which is then returned to the client.
+
+49
+
+00:03:22,750  -->  00:03:27,419
+As a last thing, I just want to mention that
+the approach is different if you retrieve
+
+50
+
+00:03:27,419  -->  00:03:29,919
+a single document by its ID.
+
+51
+
+00:03:29,919  -->  00:03:34,919
+When doing this, the request is routed to
+the appropriate shard instead of being broadcasted
+
+52
+
+00:03:34,919  -->  00:03:37,239
+to all of the index’ shards.
+
+53
+
+00:03:37,240  -->  00:03:41,400
+In the next lecture, I will briefly explain
+how routing works at a high level.

@@ -1,0 +1,521 @@
+1
+
+00:00:02,660  -->  00:00:07,600
+You should now have a good understanding of
+how analyzers work and when they are used.
+
+2
+
+00:00:08,360  -->  00:00:11,640
+Elasticsearch comes with a number of built-in
+analyzers.
+
+3
+
+00:00:12,320  -->  00:00:18,700
+These are simply pre-configured combinations
+of character filters, token filters, and a tokenizer.
+
+4
+
+00:00:19,880  -->  00:00:25,100
+They are available for your convenience, so
+there is nothing magical about them; you can
+
+5
+
+00:00:25,100  -->  00:00:28,560
+make custom analyzers that do the same thing
+if you want to.
+
+6
+
+00:00:29,180  -->  00:00:31,720
+Let’s quickly go through the most important
+ones.
+
+7
+
+00:00:32,660  -->  00:00:37,320
+First, we have the “standard” analyzer,
+which we have already talked about.
+
+8
+
+00:00:37,880  -->  00:00:44,340
+It splits text into terms at word boundaries,
+and also removes punctuation in the process.
+
+9
+
+00:00:45,060  -->  00:00:47,400
+That’s done with the “standard” tokenizer.
+
+10
+
+00:00:47,860  -->  00:00:52,900
+Apart from that, it also lowercases letters
+with the “lowercase” token filter.
+
+11
+
+00:00:53,620  -->  00:00:58,420
+It actually contains the “stop” token
+filter as well, for removing stop words.
+
+12
+
+00:00:58,900  -->  00:01:04,480
+This filter is disabled by default, but can
+be enabled through configuration, which you
+
+13
+
+00:01:04,480  -->  00:01:05,840
+will see in a moment.
+
+14
+
+00:01:09,580  -->  00:01:13,740
+The “simple” analyzer is quite similar
+to the “standard” analyzer.
+
+15
+
+00:01:14,100  -->  00:01:18,920
+The difference is that it splits the input
+text whenever it encounters anything other
+
+16
+
+00:01:18,940  -->  00:01:22,860
+than a letter, where the “standard” analyzer
+splits by word.
+
+17
+
+00:01:23,760  -->  00:01:29,960
+This analyzer also lowercases terms, but this
+is done by the “lowercase” tokenizer and
+
+18
+
+00:01:29,960  -->  00:01:31,560
+not a token filter.
+
+19
+
+00:01:32,100  -->  00:01:37,840
+That’s pretty unusual because a tokenizer
+is not really supposed to do that.
+
+20
+
+00:01:38,560  -->  00:01:42,900
+This is a performance hack to avoid passing
+through the input twice.
+
+21
+
+00:01:45,900  -->  00:01:51,720
+The “whitespace” analyzer simply splits
+the input text whenever it encounters a whitespace.
+
+22
+
+00:01:52,420  -->  00:01:56,300
+Unlike the other analyzers, it does not lowercase
+letters.
+
+23
+
+00:01:57,420  -->  00:02:03,200
+The “keyword” analyzer is a no-op analyzer,
+meaning that it leaves the input text intact
+
+24
+
+00:02:03,200  -->  00:02:05,940
+and simply outputs it as a single term.
+
+25
+
+00:02:06,640  -->  00:02:07,740
+Sounds familiar?
+
+26
+
+00:02:08,240  -->  00:02:13,020
+This analyzer is actually used for fields
+of the “keyword” data type by default.
+
+27
+
+00:02:13,700  -->  00:02:17,140
+Remember how these fields are used for matching
+exact values?
+
+28
+
+00:02:17,580  -->  00:02:22,880
+Behind the scenes, the “keyword” analyzer
+is used, and the exact input values are stored
+
+29
+
+00:02:22,880  -->  00:02:24,640
+within inverted indices.
+
+30
+
+00:02:25,780  -->  00:02:31,420
+The “pattern” analyzer lets you define
+a regular expression to match token separators.
+
+31
+
+00:02:31,920  -->  00:02:36,980
+This essentially means that you should match
+whatever should cause the input text to be
+
+32
+
+00:02:36,980  -->  00:02:38,700
+split into tokens.
+
+33
+
+00:02:39,220  -->  00:02:45,380
+This can be anything you want, really, so
+this analyzer provides a lot of flexibility.
+
+34
+
+00:02:46,560  -->  00:02:51,860
+The default pattern matches all non-word characters
+as shown in the example.
+
+35
+
+00:02:52,800  -->  00:02:58,060
+Note that the analyzer lowercases letters
+by default, but this can be disabled.
+
+36
+
+00:03:00,880  -->  00:03:05,480
+Last but not least, there are a number of
+language specific analyzers.
+
+37
+
+00:03:06,720  -->  00:03:09,640
+Let’s head over to the documentation for
+a moment.
+
+38
+
+00:03:10,860  -->  00:03:16,220
+This page shows a list of the built-in analyzers,
+most of which we just covered.
+
+39
+
+00:03:16,760  -->  00:03:20,820
+Let’s click the link to the documentation
+for the language analyzers.
+
+40
+
+00:03:25,540  -->  00:03:31,840
+At the top of the page, we can see a list of the 
+available analyzers, covering most languages.
+
+41
+
+00:03:32,380  -->  00:03:35,100
+Let’s click the “english” one and see
+what it does.
+
+42
+
+00:03:38,080  -->  00:03:44,140
+This takes us to a query snippet showing how the analyzer could be implemented as a custom analyzer.
+
+43
+
+00:03:44,900  -->  00:03:49,200
+That’s not how you would use the analyzer,
+unless you want to change things.
+
+44
+
+00:03:49,500  -->  00:03:54,680
+This just shows us the pieces the analyzer
+consists of so that we can understand what
+
+45
+
+00:03:54,680  -->  00:03:55,400
+it does.
+
+46
+
+00:03:56,660  -->  00:04:02,140
+As we can see, it uses the “standard”
+tokenizer and a number of token filters.
+
+47
+
+00:04:03,360  -->  00:04:08,940
+The first one is a so-called possessive stemmer,
+which removes possession from words.
+
+48
+
+00:04:09,820  -->  00:04:14,980
+Possession typically refers to ‘s, as in
+“Peter’s dog.”
+
+49
+
+00:04:15,780  -->  00:04:22,540
+It then lowercases all letters as most analyzers
+do and also removes English stop words.
+
+50
+
+00:04:23,600  -->  00:04:29,320
+The “keyword_marker” filter is a way to
+exclude words from stemming, but it is not
+
+51
+
+00:04:29,320  -->  00:04:32,360
+enabled by default, so let’s ignore that
+one.
+
+52
+
+00:04:33,720  -->  00:04:37,400
+Finally the analyzer stems words for the English
+language.
+
+53
+
+00:04:38,080  -->  00:04:43,690
+While this example is specific to the English
+language, this is more or less what most of
+
+54
+
+00:04:43,690  -->  00:04:45,180
+the analyzers look like.
+
+55
+
+00:04:45,760  -->  00:04:50,020
+Some of the analyzers do handle some language
+specific quirks, though.
+
+56
+
+00:04:51,060  -->  00:04:56,320
+As you can see, the language analyzers are
+just standard implementations that handle
+
+57
+
+00:04:56,320  -->  00:04:57,400
+basic things.
+
+58
+
+00:04:57,880  -->  00:05:02,400
+They are often a good starting point if you
+don’t need anything super advanced.
+
+59
+
+00:05:02,940  -->  00:05:06,520
+Sometimes you might want to expand the configuration
+though.
+
+60
+
+00:05:06,900  -->  00:05:12,520
+An example could be to handle synonyms, which
+is a topic that is covered later in the course.
+
+61
+
+00:05:13,720  -->  00:05:16,760
+Those were the most interesting built-in analyzers.
+
+62
+
+00:05:17,140  -->  00:05:20,160
+Let’s now look at how we can use them within
+field mappings.
+
+63
+
+00:05:20,580  -->  00:05:25,980
+That’s actually extremely easy, because
+all we need to do is to specify the name of
+
+64
+
+00:05:25,980  -->  00:05:29,500
+an analyzer for a mapping parameter named
+“analyzer.”
+
+65
+
+00:05:30,640  -->  00:05:36,740
+The following query shows how the “english” language analyzer can be specified for a “description” field.
+
+66
+
+00:05:37,780  -->  00:05:41,520
+This analyzer is used both at index and search
+time.
+
+67
+
+00:05:41,880  -->  00:05:43,240
+Pretty easy, right?
+
+68
+
+00:05:44,100  -->  00:05:49,370
+While all of the built-in analyzers can be
+used in this way, many of them can also be
+
+69
+
+00:05:49,370  -->  00:05:51,860
+configured to adjust their behavior.
+
+70
+
+00:05:52,480  -->  00:05:58,780
+For instance, the “standard” analyzer
+can easily be configured to remove stop words,
+
+71
+
+00:05:58,780  -->  00:06:00,760
+which it doesn’t do by default.
+
+72
+
+00:06:01,820  -->  00:06:08,040
+Instead of having to implement a custom analyzer
+from scratch, we can configure the built-in analyzer.
+
+73
+
+00:06:09,120  -->  00:06:11,520
+That’s exactly what you see on your screen now.
+
+74
+
+00:06:12,720  -->  00:06:17,720
+We are actually creating a custom analyzer
+by extending the “standard” analyzer,
+
+75
+
+00:06:17,920  -->  00:06:20,380
+as specified within the “type” parameter.
+
+76
+
+00:06:21,040  -->  00:06:26,480
+In this example, I have given it a name of
+“remove_english_stop_words,” but that’s
+
+77
+
+00:06:26,480  -->  00:06:28,120
+just an arbitrary name.
+
+78
+
+00:06:29,300  -->  00:06:34,010
+The structure of the query is a bit different
+compared to what you have seen so far, but
+
+79
+
+00:06:34,010  -->  00:06:38,660
+don’t worry about that for now; I will cover
+that in detail in the next lecture.
+
+80
+
+00:06:39,800  -->  00:06:42,860
+For now, let’s focus on the innermost object.
+
+81
+
+00:06:43,680  -->  00:06:48,840
+Besides specifying the type of analyzer, we
+simply add any parameters to this object.
+
+82
+
+00:06:50,240  -->  00:06:52,340
+So which ones are available, then?
+
+83
+
+00:06:52,920  -->  00:06:56,300
+We can check that within the documentation
+for each analyzer.
+
+84
+
+00:06:56,940  -->  00:07:01,480
+Let’s head back to the browser and go to
+the documentation for the “standard” analyzer.
+
+85
+
+00:07:04,660  -->  00:07:09,660
+If we scroll down a bit, we can see which
+parameters the analyzer supports.
+
+86
+
+00:07:10,060  -->  00:07:15,860
+In the example you saw a moment ago, I used
+the “stopwords” parameter, which we also see here.
+
+87
+
+00:07:17,920  -->  00:07:23,040
+Okay, so now that we have created a custom
+analyzer, how do we use it?
+
+88
+
+00:07:23,600  -->  00:07:29,380
+You probably won’t be surprised that we
+use it in the exact same way as you saw earlier;
+
+89
+
+00:07:29,400  -->  00:07:31,520
+by simply specifying its name.
+
+90
+
+00:07:32,860  -->  00:07:35,100
+That’s it for built-in analyzers!
+
+91
+
+00:07:35,380  -->  00:07:37,640
+Now it’s time to create a custom analyzer.

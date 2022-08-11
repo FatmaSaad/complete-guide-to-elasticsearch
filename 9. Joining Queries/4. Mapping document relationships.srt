@@ -1,0 +1,347 @@
+1
+1
+
+00:00:02,410  -->  00:00:05,210
+The first step to defining document relationships,
+2
+
+2
+
+00:00:05,210  -->  00:00:07,310
+is to define them in the mapping.
+3
+
+3
+
+00:00:07,310  -->  00:00:09,260
+Because we need to change the mapping,
+4
+
+4
+
+00:00:09,260  -->  00:00:12,130
+I have deleted the department index in advance,
+5
+
+5
+
+00:00:12,130  -->  00:00:15,020
+just to make things easier for ourselves.
+6
+
+6
+
+00:00:15,020  -->  00:00:17,930
+The way we can join documents in Elasticsearch
+7
+
+7
+
+00:00:17,930  -->  00:00:21,700
+is by using a special kind of field called a join field.
+8
+
+8
+
+00:00:21,700  -->  00:00:24,440
+This field defines the relations between the types
+9
+
+9
+
+00:00:24,440  -->  00:00:27,720
+of documents that are part of the document hierarchy.
+10
+
+10
+
+00:00:27,720  -->  00:00:29,860
+Let's get started adding the mapping for the field
+11
+
+11
+
+00:00:29,860  -->  00:00:31,240
+and I'll share a few more details
+12
+
+12
+
+00:00:31,240  -->  00:00:33,500
+about the field afterwards.
+13
+
+13
+
+00:00:33,500  -->  00:00:35,310
+We can name the field anything we want,
+14
+
+14
+
+00:00:35,310  -->  00:00:39,583
+exactly as any other field, so I'll just name it join_field.
+15
+
+15
+
+00:00:40,040  -->  00:00:44,010
+So I'll write join_field here
+16
+
+16
+
+00:00:44,010  -->  00:00:46,653
+and give it a value of an object.
+17
+
+17
+
+00:00:47,730  -->  00:00:49,870
+The data type for this field is join,
+18
+
+18
+
+00:00:49,870  -->  00:00:52,140
+which is a special data type that's dedicated
+19
+
+19
+
+00:00:52,140  -->  00:00:54,390
+for defining document relationships.
+20
+
+20
+
+00:00:54,390  -->  00:00:56,540
+So I'll define that through the type object
+21
+
+21
+
+00:00:58,000  -->  00:01:00,390
+and set it to join.
+22
+
+22
+
+00:01:00,390  -->  00:01:02,900
+The possible relations between the various kinds
+23
+
+23
+
+00:01:02,900  -->  00:01:06,700
+of documents must then be defined within a relations object,
+24
+
+24
+
+00:01:06,700  -->  00:01:09,340
+so let's go ahead and add that object.
+25
+
+25
+
+00:01:09,340  -->  00:01:14,120
+So relations, and I'll set it to an empty object for now.
+26
+
+26
+
+00:01:14,120  -->  00:01:16,620
+This object should contain key-value pairs
+27
+
+27
+
+00:01:16,620  -->  00:01:19,680
+defining the relationships between documents.
+28
+
+28
+
+00:01:19,680  -->  00:01:22,600
+Let's continue with the example from the previous lecture
+29
+
+29
+
+00:01:22,600  -->  00:01:26,340
+and add a relationship between a department and an employee.
+30
+
+30
+
+00:01:26,340  -->  00:01:28,060
+We can do that by adding a key
+31
+
+31
+
+00:01:28,060  -->  00:01:31,390
+with a value of department and a value of employee,
+32
+
+32
+
+00:01:31,390  -->  00:01:32,990
+so let's do that.
+33
+
+33
+
+00:01:32,990  -->  00:01:37,990
+So department, and employee as the value.
+34
+
+34
+
+00:01:38,600  -->  00:01:41,460
+These are just arbitrary strings of our choice
+35
+
+35
+
+00:01:41,460  -->  00:01:44,330
+and the key does not need to match the name of the index
+36
+
+36
+
+00:01:44,330  -->  00:01:46,400
+as it does in this example.
+37
+
+37
+
+00:01:46,400  -->  00:01:47,233
+That's it!
+38
+
+38
+
+00:01:47,233  -->  00:01:48,810
+Let's go ahead and run the query.
+39
+
+39
+
+00:01:51,300  -->  00:01:54,300
+Okay, so what does this actually mean?
+40
+
+40
+
+00:01:54,300  -->  00:01:56,600
+We have just defined two relation types,
+41
+
+41
+
+00:01:56,600  -->  00:01:58,800
+being department and employee,
+42
+
+42
+
+00:01:58,800  -->  00:02:02,150
+where department is the parent of employee.
+43
+
+43
+
+00:02:02,150  -->  00:02:04,030
+This means that we have effectively
+44
+
+44
+
+00:02:04,030  -->  00:02:06,360
+defined a parent-child relationship
+45
+
+45
+
+00:02:06,360  -->  00:02:09,400
+which we can make use of when adding documents.
+46
+
+46
+
+00:02:09,400  -->  00:02:10,910
+The relation that we defined
+47
+
+47
+
+00:02:10,910  -->  00:02:13,210
+is between a parent and a child,
+48
+
+48
+
+00:02:13,210  -->  00:02:14,590
+but we could also have defined
+49
+
+49
+
+00:02:14,590  -->  00:02:16,910
+multiple children if we wanted to.
+50
+
+50
+
+00:02:16,910  -->  00:02:18,460
+All we had to do for that, would be
+51
+
+51
+
+00:02:18,460  -->  00:02:22,100
+to change the string value with an array of strings instead.
+52
+
+52
+
+00:02:22,100  -->  00:02:24,810
+That way, each of the strings within the array
+53
+
+53
+
+00:02:24,810  -->  00:02:27,993
+represents a child document type belonging to the parent.
+54
+
+54
+
+00:02:28,910  -->  00:02:31,400
+Anyways, the relation that we did create
+55
+
+55
+
+00:02:31,400  -->  00:02:34,920
+enables us to query documents based on the relationship,
+56
+
+56
+
+00:02:34,920  -->  00:02:37,160
+which you will see in a couple of lectures.
+57
+
+57
+
+00:02:37,160  -->  00:02:39,620
+But first, let's add some documents to the index
+58
+
+58
+
+00:02:39,620  -->  00:02:41,593
+so that we have some data to work with.

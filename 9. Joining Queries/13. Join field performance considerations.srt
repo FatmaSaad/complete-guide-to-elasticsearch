@@ -1,0 +1,351 @@
+1
+
+00:00:02,320  -->  00:00:07,240
+Now that you know how to use joining queries
+and how to map document relationships, let’s
+
+2
+
+00:00:07,240  -->  00:00:10,400
+talk a bit about the performance of these
+queries.
+
+3
+
+00:00:10,400  -->  00:00:15,240
+Note that in this lecture, I am talking specifically
+about the performance of the “join” field,
+
+4
+
+00:00:15,240  -->  00:00:18,980
+i.e. parent/child joins, and not the “nested”
+query.
+
+5
+
+00:00:18,980  -->  00:00:24,260
+Well, let me just begin by summarizing the
+takeaway from this lecture; join queries are
+
+6
+
+00:00:24,269  -->  00:00:29,390
+expensive in terms of performance and should
+be avoided whenever possible.
+
+7
+
+00:00:29,390  -->  00:00:33,920
+There are a few cases where using join fields
+makes sense, but in general they should be
+
+8
+
+00:00:33,920  -->  00:00:35,850
+used with caution.
+
+9
+
+00:00:35,850  -->  00:00:42,320
+Of course this is a slight simplification,
+as it also depends how much data you are dealing with.
+
+10
+
+00:00:42,320  -->  00:00:46,120
+If you don’t care for the details of this,
+then you are welcome to skip the remainder
+
+11
+
+00:00:46,120  -->  00:00:47,420
+of this lecture.
+
+12
+
+00:00:47,420  -->  00:00:50,400
+Otherwise, let’s dive into a bit more detail.
+
+13
+
+00:00:50,400  -->  00:00:53,700
+Like I said, using “join” fields is slow.
+
+14
+
+00:00:53,700  -->  00:00:59,300
+For example, the performance of the “has_child”
+query degrades the more child documents that
+
+15
+
+00:00:59,300  -->  00:01:02,140
+point to unique parent documents.
+
+16
+
+00:01:02,140  -->  00:01:07,090
+Essentially the query just gets slower the
+more documents you add to an index that uses
+
+17
+
+00:01:07,090  -->  00:01:08,800
+a “join” field.
+
+18
+
+00:01:08,800  -->  00:01:12,860
+You won’t notice this in the beginning,
+but as the number of documents increases,
+
+19
+
+00:01:12,860  -->  00:01:19,180
+you will start to see increasing query times,
+which will eventually become quite significant.
+
+20
+
+00:01:19,180  -->  00:01:24,030
+The same applies for the “has_parent”
+query, where the number of parent documents
+
+21
+
+00:01:24,030  -->  00:01:26,720
+affects performance negatively.
+
+22
+
+00:01:26,720  -->  00:01:32,009
+Apart from that, if you make use of multi-level
+relations, then each level of relation adds
+
+23
+
+00:01:32,009  -->  00:01:37,120
+an overhead to your queries, so you should
+almost always avoid this.
+
+24
+
+00:01:37,120  -->  00:01:41,460
+That being said, there is a scenario where
+it makes sense to use a “join” field and
+
+25
+
+00:01:41,460  -->  00:01:43,960
+where the performance will still be good.
+
+26
+
+00:01:43,960  -->  00:01:49,460
+That’s if you have a one-to-many relationship
+between two document types and there are significantly
+
+27
+
+00:01:49,460  -->  00:01:52,140
+more of one type than the other.
+
+28
+
+00:01:52,140  -->  00:01:56,860
+Having recipes as the parent documents and
+ingredients as child documents, is a good
+
+29
+
+00:01:56,860  -->  00:02:01,740
+candidate for using a “join” field, because
+there are going to be significantly more ingredients
+
+30
+
+00:02:01,740  -->  00:02:03,399
+than recipes.
+
+31
+
+00:02:03,399  -->  00:02:07,909
+You could also map the ingredients as nested
+objects if you wanted to, but the point is
+
+32
+
+00:02:07,909  -->  00:02:11,920
+that it would also be fine to use a “join”
+field in this case.
+
+33
+
+00:02:11,920  -->  00:02:16,740
+Alright, so now that you know a bit more about
+the implications of using “join” fields,
+
+34
+
+00:02:16,750  -->  00:02:19,680
+there are two more questions left to be answered.
+
+35
+
+00:02:19,680  -->  00:02:24,910
+The first one is: if using “join” fields
+is usually discouraged, then why on Earth
+
+36
+
+00:02:24,910  -->  00:02:28,180
+did I just spend so much time talking about
+it?
+
+37
+
+00:02:28,180  -->  00:02:32,700
+Well, because there are still times where
+it’s perfectly fine to make use of parent/child
+
+38
+
+00:02:32,700  -->  00:02:36,740
+relations, such as in the example that I told
+you about a moment ago.
+
+39
+
+00:02:36,740  -->  00:02:42,740
+And also if you have limited number of documents
+and don’t anticipate that it’s going to change much.
+
+40
+
+00:02:42,740  -->  00:02:47,200
+Secondly, it’s still a part of Elasticsearch,
+and it’s not my job to decide how you are
+
+41
+
+00:02:47,200  -->  00:02:49,280
+going to map your documents.
+
+42
+
+00:02:49,280  -->  00:02:53,120
+That’s also impossible, as every use case
+is different.
+
+43
+
+00:02:53,120  -->  00:02:57,530
+It is, however, my responsibility to give
+you the tools that you need to make a qualified
+
+44
+
+00:02:57,530  -->  00:03:02,670
+decision and my recommendations, but in the
+end the choice is yours.
+
+45
+
+00:03:02,670  -->  00:03:07,840
+The other question is: if “join” fields
+are usually not a good idea to use, then how
+
+46
+
+00:03:07,840  -->  00:03:10,880
+do we map document relationships properly?
+
+47
+
+00:03:10,880  -->  00:03:16,920
+Well, for one, we have the “nested” data
+type, but that might not always suit your needs.
+
+48
+
+00:03:16,920  -->  00:03:21,640
+So generally speaking, you shouldn’t map
+document relationships.
+
+49
+
+00:03:21,650  -->  00:03:26,860
+Elasticsearch is very efficient for searching
+through tons of data, but Elasticsearch is
+
+50
+
+00:03:26,860  -->  00:03:31,520
+a very different technology than a relational
+database, for instance.
+
+51
+
+00:03:31,520  -->  00:03:36,980
+This means that you should store data as a
+structure that is optimized for efficient searching.
+
+52
+
+00:03:36,980  -->  00:03:41,540
+I mentioned this in one of the first lectures
+of the course, but now seems like an appropriate
+
+53
+
+00:03:41,540  -->  00:03:43,820
+time to recap on that.
+
+54
+
+00:03:43,820  -->  00:03:47,160
+Suppose that you want to map employees as
+documents.
+
+55
+
+00:03:47,160  -->  00:03:51,700
+Instead of having the employee’s address
+as a stand-alone document, you can either
+
+56
+
+00:03:51,710  -->  00:03:56,860
+map it as a nested object, or you can just
+add the fields like any other fields.
+
+57
+
+00:03:56,860  -->  00:04:02,020
+The point is that you denormalize the data
+instead of trying to map document relationships,
+
+58
+
+00:04:02,020  -->  00:04:07,660
+because that’s not how things are supposed
+to be done in Elasticsearch, at least generally speaking.
+
+59
+
+00:04:07,660  -->  00:04:11,660
+So unless you have a good reason for using
+“join” fields, try to just denormalize
+
+60
+
+00:04:11,670  -->  00:04:15,900
+your data and use “join” fields whenever
+that doesn’t work for you, and you can accept
+
+61
+
+00:04:15,900  -->  00:04:19,900
+the consequences and limitations of using
+“join” fields.
