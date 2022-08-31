@@ -1,34 +1,13 @@
-1
-
-00:00:02,060  -->  00:00:04,160
+Transcript
 That’s it for this section of the course!
 
-2
+We covered a lot of grounds in regards to mapping and text analysis.
 
-00:00:04,560  -->  00:00:08,560
-We covered a lot of grounds in regards to
-mapping and text analysis.
+These two topics are really fundamental to understanding how Elasticsearch works.
 
-3
+In particular, they are the foundation that we will build on top of in the following sections.
 
-00:00:09,240  -->  00:00:14,140
-These two topics are really fundamental to
-understanding how Elasticsearch works.
+Perhaps you have been eager to get to searching for data.
 
-4
+Well, wait no more, because that’s what we will be covering next!
 
-00:00:14,780  -->  00:00:19,400
-In particular, they are the foundation that
-we will build on top of in the following sections.
-
-5
-
-00:00:20,040  -->  00:00:23,180
-Perhaps you have been eager to get to searching
-for data.
-
-6
-
-00:00:23,460  -->  00:00:27,080
-Well, wait no more, because that’s what
-we will be covering next!

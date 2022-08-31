@@ -1,374 +1,133 @@
-1
+Transcript
+I mentioned something called the Elastic Common Schema (abbreviated ECS) in the previous lecture.
 
-00:00:02,560  -->  00:00:08,440
-I mentioned something called the Elastic Common
-Schema (abbreviated ECS) in the previous lecture.
-
-2
-
-00:00:08,840  -->  00:00:10,020
 So, what is it?
 
-3
+ECS is a specification that defines a set of common fields, including their names and
 
-00:00:10,880  -->  00:00:16,720
-ECS is a specification that defines a set
-of common fields, including their names and
-
-4
-
-00:00:16,720  -->  00:00:19,280
 how they should be mapped in Elasticsearch.
 
-5
+ECS came to life as the number of products within the Elastic Stack grew.
 
-00:00:20,400  -->  00:00:24,880
-ECS came to life as the number of products
-within the Elastic Stack grew.
+Values were ingested into Elasticsearch using different field names depending on the source,
 
-6
-
-00:00:25,760  -->  00:00:31,000
-Values were ingested into Elasticsearch using
-different field names depending on the source,
-
-7
-
-00:00:31,040  -->  00:00:34,280
 and so there was no cohesion between the mappings.
 
-8
-
-00:00:35,320  -->  00:00:38,240
 This was both confusing and inconvenient.
 
-9
+For instance, a Kibana dashboard needed to know which particular web server was being
 
-00:00:38,840  -->  00:00:43,940
-For instance, a Kibana dashboard needed to
-know which particular web server was being
+used because the field names were different - at least when using Filebeat modules.
 
-10
+There was really no standard, and so the fields were often named something along the lines
 
-00:00:43,940  -->  00:00:48,800
-used because the field names were different
-- at least when using Filebeat modules.
-
-11
-
-00:00:49,860  -->  00:00:54,080
-There was really no standard, and so the fields
-were often named something along the lines
-
-12
-
-00:00:54,080  -->  00:00:59,840
 of “apache2.access.url” or “nginx.access.url.”
 
-13
+This was inconvenient because the data consumer — such as Kibana — needed to know the
 
-00:01:00,580  -->  00:01:05,660
-This was inconvenient because the data consumer
-— such as Kibana — needed to know the
-
-14
-
-00:01:05,660  -->  00:01:07,280
 event source implementation.
 
-15
+However, once access logs are parsed, it makes no difference if the web server that generated
 
-00:01:08,220  -->  00:01:13,740
-However, once access logs are parsed, it makes
-no difference if the web server that generated
-
-16
-
-00:01:13,740  -->  00:01:16,240
 them is named Apache or nginx.
 
-17
+Changing the web server would cause all kinds of trouble all the way through the ingestion
 
-00:01:17,460  -->  00:01:22,240
-Changing the web server would cause all kinds
-of trouble all the way through the ingestion
+pipeline because the field names would then be different.
 
-18
+Therefore we want to keep the field names the same so that Kibana doesn’t need to
 
-00:01:22,240  -->  00:01:25,300
-pipeline because the field names would then
-be different.
+know if events come from an Apache or nginx web server.
 
-19
+Realistically, you don’t change a web server that often, but it is a dependency nonetheless.
 
-00:01:26,260  -->  00:01:30,640
-Therefore we want to keep the field names
-the same so that Kibana doesn’t need to
+It’s pretty common to ingest data from a number of sources at the same time, though.
 
-20
+For instance, we might want to collect data from a number of different services such as
 
-00:01:30,640  -->  00:01:34,240
-know if events come from an Apache or nginx
-web server.
+a Postgres database, Kafka, nginx, and perhaps a Redis cluster.
 
-21
+We would probably process an event once per minute, and we would need to store this timestamp
 
-00:01:35,220  -->  00:01:41,400
-Realistically, you don’t change a web server
-that often, but it is a dependency nonetheless.
-
-22
-
-00:01:42,020  -->  00:01:46,720
-It’s pretty common to ingest data from a
-number of sources at the same time, though.
-
-23
-
-00:01:47,700  -->  00:01:52,900
-For instance, we might want to collect data
-from a number of different services such as
-
-24
-
-00:01:52,900  -->  00:01:58,100
-a Postgres database, Kafka, nginx, and perhaps
-a Redis cluster.
-
-25
-
-00:01:59,020  -->  00:02:04,200
-We would probably process an event once per
-minute, and we would need to store this timestamp
-
-26
-
-00:02:04,220  -->  00:02:05,240
 within a field.
 
-27
+Instead of having each service potentially name this field differently, the ECS specification
 
-00:02:06,040  -->  00:02:12,240
-Instead of having each service potentially
-name this field differently, the ECS specification
-
-28
-
-00:02:12,240  -->  00:02:14,620
 states that it should be named @timestamp.
 
-29
+This means that no matter which kind of event you are dealing with, this should be the name
 
-00:02:15,380  -->  00:02:20,120
-This means that no matter which kind of event
-you are dealing with, this should be the name
-
-30
-
-00:02:20,120  -->  00:02:21,840
 of when the event originated.
 
-31
+This makes it easier when consuming data — perhaps through Kibana — because the name of the
 
-00:02:22,800  -->  00:02:28,180
-This makes it easier when consuming data — perhaps
-through Kibana — because the name of the
+timestamp field is the same regardless of the event source.
 
-32
+Note that the @timestamp field is used for events; you might still have a field named
 
-00:02:28,180  -->  00:02:31,780
-timestamp field is the same regardless of
-the event source.
-
-33
-
-00:02:32,460  -->  00:02:37,780
-Note that the @timestamp field is used for
-events; you might still have a field named
-
-34
-
-00:02:37,780  -->  00:02:40,320
 “created_at” for products, for instance.
 
-35
-
-00:02:41,580  -->  00:02:47,260
 ECS was created to overcome the challenges of having different field names for the same things.
 
-36
+Naturally, ECS is not just related to web server logs.
 
-00:02:47,980  -->  00:02:52,200
-Naturally, ECS is not just related to web
-server logs.
+In fact, ECS is not intended to support a fixed set of use cases.
 
-37
+It defines a lot of common fields in various groups, such as network fields, geolocation
 
-00:02:52,820  -->  00:02:57,560
-In fact, ECS is not intended to support a
-fixed set of use cases.
-
-38
-
-00:02:58,120  -->  00:03:03,900
-It defines a lot of common fields in various
-groups, such as network fields, geolocation
-
-39
-
-00:03:03,900  -->  00:03:06,820
 fields, operating system fields, etc.
 
-40
-
-00:03:07,560  -->  00:03:10,600
 These groups are referred to as field sets.
 
-41
+If we take a look at the documentation, you can see all of the field sets at the right-hand
 
-00:03:11,860  -->  00:03:16,520
-If we take a look at the documentation, you
-can see all of the field sets at the right-hand
+side of the page if we expand the “ECS Field Reference” menu item.
 
-42
+All of these field sets total hundreds of fields covering many different kinds of fields.
 
-00:03:16,520  -->  00:03:20,820
-side of the page if we expand the “ECS Field
-Reference” menu item.
+In ECS terminology, documents are referred to as events.
 
-43
+That’s because ECS includes fields for most event types that are generated by a lot of
 
-00:03:24,800  -->  00:03:30,400
-All of these field sets total hundreds of
-fields covering many different kinds of fields.
-
-44
-
-00:03:34,840  -->  00:03:39,380
-In ECS terminology, documents are referred
-to as events.
-
-45
-
-00:03:40,080  -->  00:03:45,260
-That’s because ECS includes fields for most
-event types that are generated by a lot of
-
-46
-
-00:03:45,260  -->  00:03:46,840
 different technologies.
 
-47
+If you want to store data such as employees, companies, products, orders, etc., then ECS
 
-00:03:47,460  -->  00:03:54,240
-If you want to store data such as employees,
-companies, products, orders, etc., then ECS
-
-48
-
-00:03:54,240  -->  00:03:56,460
 does not provide fields for this.
 
-49
+That’s because those are specific to your use case, so there is no standard for them.
 
-00:03:56,820  -->  00:04:01,580
-That’s because those are specific to your
-use case, so there is no standard for them.
+ECS is mostly useful if you are storing standard events such as web server logs, operating
 
-50
-
-00:04:03,060  -->  00:04:08,840
-ECS is mostly useful if you are storing standard
-events such as web server logs, operating
-
-51
-
-00:04:08,840  -->  00:04:12,380
 system metrics, geospatial data, etc.
 
-52
+In that case you should try to structure your data using ECS, because then you can utilize
 
-00:04:12,900  -->  00:04:18,880
-In that case you should try to structure your
-data using ECS, because then you can utilize
+Kibana dashboards without having to reconfigure field names, for instance.
 
-53
+That being said, you will often be using Filebeat or Metricbeat for this, which structure data
 
-00:04:18,880  -->  00:04:23,720
-Kibana dashboards without having to reconfigure
-field names, for instance.
-
-54
-
-00:04:24,760  -->  00:04:30,960
-That being said, you will often be using Filebeat
-or Metricbeat for this, which structure data
-
-55
-
-00:04:30,960  -->  00:04:33,120
 according to ECS automatically.
 
-56
+For instance, if you ingest web server logs with Filebeat, you won’t have to deal with
 
-00:04:34,340  -->  00:04:39,400
-For instance, if you ingest web server logs
-with Filebeat, you won’t have to deal with
+ECS at all, because it has already been handled for you.
 
-57
+ECS is therefore mostly useful when building custom implementations that don’t involve
 
-00:04:39,400  -->  00:04:42,980
-ECS at all, because it has already been handled
-for you.
-
-58
-
-00:04:44,280  -->  00:04:50,020
-ECS is therefore mostly useful when building
-custom implementations that don’t involve
-
-59
-
-00:04:50,020  -->  00:04:51,980
 other Elastic Stack products.
 
-60
+This means that you typically won’t actively deal with ECS, but it’s good to be aware
 
-00:04:52,360  -->  00:04:58,200
-This means that you typically won’t actively
-deal with ECS, but it’s good to be aware
+of it and that it is being used across the Elastic Stack.
 
-61
+For custom implementations, it’s not a big deal if you don’t make use of ECS fields
 
-00:04:58,200  -->  00:05:01,320
-of it and that it is being used across the
-Elastic Stack.
+to be honest; consider it a best practice and recommendation.
 
-62
+For most use cases, you won’t have to actively deal with ECS, so the purpose of this lecture
 
-00:05:02,360  -->  00:05:07,540
-For custom implementations, it’s not a big
-deal if you don’t make use of ECS fields
-
-63
-
-00:05:07,540  -->  00:05:11,880
-to be honest; consider it a best practice
-and recommendation.
-
-64
-
-00:05:13,080  -->  00:05:19,060
-For most use cases, you won’t have to actively
-deal with ECS, so the purpose of this lecture
-
-65
-
-00:05:19,080  -->  00:05:22,640
 is mainly just to tell you what ECS is about.
 
-66
-
-00:05:23,540  -->  00:05:29,160
 I have attached the link to the documentation if you want to explore ECS and the fields that it provides.
+

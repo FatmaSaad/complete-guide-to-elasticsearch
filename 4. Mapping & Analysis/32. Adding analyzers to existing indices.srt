@@ -1,354 +1,125 @@
-1
+Transcript
+In the previous lecture, we added a custom analyzer at index creation time.
 
-00:00:02,700  -->  00:00:07,580
-In the previous lecture, we added a custom
-analyzer at index creation time.
+That’s often when you will add analyzers, but probably not always.
 
-2
+What if you have already created an index and you want to add an analyzer to it?
 
-00:00:08,180  -->  00:00:12,960
-That’s often when you will add analyzers,
-but probably not always.
-
-3
-
-00:00:13,660  -->  00:00:18,520
-What if you have already created an index
-and you want to add an analyzer to it?
-
-4
-
-00:00:19,120  -->  00:00:21,420
 That’s what I will show you in this lecture.
 
-5
+While it is fairly straightforward, it is probably not as easy as you think.
 
-00:00:21,960  -->  00:00:26,740
-While it is fairly straightforward, it is
-probably not as easy as you think.
-
-6
-
-00:00:27,200  -->  00:00:28,140
 Let’s take a look.
 
-7
+We already have the index from the previous lecture which contains one analyzer, so let’s
 
-00:00:29,380  -->  00:00:35,320
-We already have the index from the previous
-lecture which contains one analyzer, so let’s
-
-8
-
-00:00:35,320  -->  00:00:37,300
 add another one to that index.
 
-9
+We can do that by using the Update Index Settings API as follows.
 
-00:00:37,700  -->  00:00:42,060
-We can do that by using the Update Index Settings
-API as follows.
-
-10
-
-00:00:48,740  -->  00:00:55,460
 This API is not specific to analyzers, just like the “settings” object in the previous query isn’t.
 
-11
+The API can therefore be used for other purposes, such as changing the number of replicas.
 
-00:00:56,380  -->  00:01:02,060
-The API can therefore be used for other purposes,
-such as changing the number of replicas.
+The request body format is actually the same as the “settings” object that you saw
 
-12
+before; we just don’t need to add this object because it is implied that we are dealing
 
-00:01:02,860  -->  00:01:07,600
-The request body format is actually the same
-as the “settings” object that you saw
-
-13
-
-00:01:07,600  -->  00:01:12,359
-before; we just don’t need to add this object
-because it is implied that we are dealing
-
-14
-
-00:01:12,360  -->  00:01:14,580
 with settings when using this API.
 
-15
+That means that we can add the “analysis” object at the root of the request body.
 
-00:01:15,700  -->  00:01:20,020
-That means that we can add the “analysis”
-object at the root of the request body.
+This object uses the exact same format as you have already seen.
 
-16
+To save some time, I will just copy the “analyzer” object from the above query and paste it into
 
-00:01:25,060  -->  00:01:29,500
-This object uses the exact same format as
-you have already seen.
-
-17
-
-00:01:30,000  -->  00:01:35,560
-To save some time, I will just copy the “analyzer”
-object from the above query and paste it into
-
-18
-
-00:01:35,560  -->  00:01:36,740
 this new query.
 
-19
+I am just going to change the name of the analyzer so a new one will be added.
 
-00:01:46,400  -->  00:01:50,840
-I am just going to change the name of the
-analyzer so a new one will be added.
+I will reuse the same configuration because it is not really relevant in this context.
 
-20
-
-00:01:51,180  -->  00:01:56,080
-I will reuse the same configuration because
-it is not really relevant in this context.
-
-21
-
-00:02:02,820  -->  00:02:05,760
 Alright, let’s try to add this new analyzer.
 
-22
+We actually get an error stating that we cannot update non-dynamic settings for open indices.
 
-00:02:09,840  -->  00:02:15,900
-We actually get an error stating that we cannot
-update non-dynamic settings for open indices.
+So what is a non-dynamic setting, and what is an “open” index?
 
-23
+An open index is one that serves requests, and a closed index is… well, the opposite.
 
-00:02:16,540  -->  00:02:21,400
-So what is a non-dynamic setting, and what
-is an “open” index?
+Indices can be closed to block read and write requests, meaning that indexing and search
 
-24
-
-00:02:22,260  -->  00:02:29,440
-An open index is one that serves requests,
-and a closed index is… well, the opposite.
-
-25
-
-00:02:30,140  -->  00:02:35,740
-Indices can be closed to block read and write
-requests, meaning that indexing and search
-
-26
-
-00:02:35,740  -->  00:02:37,680
 requests are refused.
 
-27
+This is necessary for performing some operations, which leads us to what a “non-dynamic” setting is.
 
-00:02:38,540  -->  00:02:45,040
-This is necessary for performing some operations,
-which leads us to what a “non-dynamic” setting is.
+In the context of index settings, there are two kinds of settings; static and dynamic.
 
-28
+Dynamic settings can be changed on an open index, i.e. an index that is actively serving requests.
 
-00:02:45,800  -->  00:02:52,240
-In the context of index settings, there are
-two kinds of settings; static and dynamic.
+Static settings, on the other hand, can only be changed at index creation time, or while
 
-29
-
-00:02:53,580  -->  00:03:00,840
-Dynamic settings can be changed on an open
-index, i.e. an index that is actively serving requests.
-
-30
-
-00:03:01,600  -->  00:03:07,380
-Static settings, on the other hand, can only
-be changed at index creation time, or while
-
-31
-
-00:03:07,380  -->  00:03:08,840
 an index is closed.
 
-32
+Based on the error message, we can conclude that the analysis settings are static settings,
 
-00:03:10,140  -->  00:03:16,040
-Based on the error message, we can conclude
-that the analysis settings are static settings,
+meaning that we need to close the index before trying to apply the changes.
 
-33
+Fortunately that’s super easy, because we just need to send a POST request to
 
-00:03:16,220  -->  00:03:20,380
-meaning that we need to close the index before
-trying to apply the changes.
-
-34
-
-00:03:21,160  -->  00:03:26,340
-Fortunately that’s super easy, because we
-just need to send a POST request to
-
-35
-
-00:03:26,340  -->  00:03:27,780
 the Close Index API.
 
-36
-
-00:03:41,500  -->  00:03:43,560
 The index is now closed.
 
-37
+Any attempt to search or index documents will be refused while the index is in the closed state.
 
-00:03:44,220  -->  00:03:50,320
-Any attempt to search or index documents will
-be refused while the index is in the closed state.
+Having closed the index should allow us to add the analyzer, so let’s run the query again.
 
-38
-
-00:03:51,380  -->  00:03:56,800
-Having closed the index should allow us to
-add the analyzer, so let’s run the query again.
-
-39
-
-00:03:59,780  -->  00:04:01,740
 Indeed we no longer get any errors.
 
-40
+To enable the index to handle indexing and search requests, we need to open it.
 
-00:04:03,020  -->  00:04:08,140
-To enable the index to handle indexing and
-search requests, we need to open it.
+That’s as simple as invoking the Open Index API.
 
-41
+The endpoint is just “_open” instead of “_close,” so we can just copy and modify
 
-00:04:08,700  -->  00:04:11,700
-That’s as simple as invoking the Open Index
-API.
+the query that we used to close the index.
 
-42
+Now that the index is open, we are free to use the analyzer within field mappings.
 
-00:04:12,380  -->  00:04:18,540
-The endpoint is just “_open” instead of
-“_close,” so we can just copy and modify
+You already know how to do that, so I won’t do that now.
 
-43
+Instead, let’s quickly retrieve the index settings and verify that our analyzer is present
 
-00:04:18,540  -->  00:04:21,200
-the query that we used to close 
-the index.
+and ready for use.
 
-44
+Looking at the results, we can indeed see that two analyzers are now available.
 
-00:04:31,040  -->  00:04:36,660
-Now that the index is open, we are free to
-use the analyzer within field mappings.
+Having to close and open the index is not specific to analyzers, but more precisely
 
-45
-
-00:04:37,080  -->  00:04:40,540
-You already know how to do that, so I won’t
-do that now.
-
-46
-
-00:04:41,100  -->  00:04:46,880
-Instead, let’s quickly retrieve the index
-settings and verify that our analyzer is present
-
-47
-
-00:04:46,880  -->  00:04:48,240
-and ready 
-for use.
-
-48
-
-00:04:58,840  -->  00:05:04,060
-Looking at the results, we can indeed see
-that two analyzers are now available.
-
-49
-
-00:05:05,000  -->  00:05:10,840
-Having to close and open the index is not
-specific to analyzers, but more precisely
-
-50
-
-00:05:10,840  -->  00:05:13,180
 to anything related to analysis.
 
-51
+You therefore need to do the same thing if you want to modify character filters, tokenizers,
 
-00:05:13,860  -->  00:05:18,980
-You therefore need to do the same thing if
-you want to modify character filters, tokenizers,
-
-52
-
-00:05:18,980  -->  00:05:20,340
 or token filters.
 
-53
+That typically goes hand in hand with modifying an analyzer as well, though.
 
-00:05:20,940  -->  00:05:25,180
-That typically goes hand in hand with modifying
-an analyzer as well, though.
+Even though the process of closing and reopening an index is fairly quick, it might not be
 
-54
-
-00:05:26,160  -->  00:05:31,940
-Even though the process of closing and reopening
-an index is fairly quick, it might not be
-
-55
-
-00:05:31,940  -->  00:05:34,600
 an option for some production systems.
 
-56
+It might not be a big deal that the index is briefly unavailable, but for mission critical
 
-00:05:35,100  -->  00:05:40,720
-It might not be a big deal that the index
-is briefly unavailable, but for mission critical
-
-57
-
-00:05:40,720  -->  00:05:43,040
 systems, it might not be acceptable.
 
-58
+In such a situation, you could alternatively reindex documents into a new index containing
 
-00:05:44,120  -->  00:05:50,640
-In such a situation, you could alternatively
-reindex documents into a new index containing
+the new configuration and then use an index alias during the transition.
 
-59
+Typically, closing and opening an index is not a problem during maintenance windows, though.
 
-00:05:50,640  -->  00:05:55,600
-the new configuration and then use an index
-alias during the transition.
+Now that you know how to add new analyzers to existing indices, what about updating analyzers?
 
-60
-
-00:05:56,400  -->  00:06:02,340
-Typically, closing and opening an index is
-not a problem during maintenance windows, though.
-
-61
-
-00:06:03,340  -->  00:06:09,460
-Now that you know how to add new analyzers
-to existing indices, what about updating analyzers?
-
-62
-
-00:06:09,840  -->  00:06:10,840
 Let’s take a look.
+

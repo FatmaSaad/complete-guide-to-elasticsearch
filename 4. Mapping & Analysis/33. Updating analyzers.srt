@@ -1,501 +1,179 @@
-1
+Transcript
+Sometimes you might have an existing analyzer that you want to update.
 
-00:00:02,540  -->  00:00:06,940
-Sometimes you might have an existing analyzer
-that you want to update.
+As with mapping, you should try to get it right the first time to save yourself from
 
-2
-
-00:00:07,600  -->  00:00:12,620
-As with mapping, you should try to get it
-right the first time to save yourself from
-
-3
-
-00:00:12,620  -->  00:00:16,400
 some additional work, but things change sometimes.
 
-4
+In this lecture, I am going to show you how to update an existing analyzer.
 
-00:00:17,160  -->  00:00:21,580
-In this lecture, I am going to show you how
-to update an existing analyzer.
+For that purpose I have prepared a number of queries in advance, because you have seen
 
-5
-
-00:00:22,060  -->  00:00:27,020
-For that purpose I have prepared a number
-of queries in advance, because you have seen
-
-6
-
-00:00:27,020  -->  00:00:28,000
 them all before.
 
-7
+We have an index with a custom analyzer, but we haven’t used it within a field mapping
 
-00:00:29,260  -->  00:00:34,000
-We have an index with a custom analyzer, but
-we haven’t used it within a field mapping
-
-8
-
-00:00:34,000  -->  00:00:36,260
 yet, so let’s do that first.
 
-9
+Particularly, let’s add a “description” field that uses the analyzer named “my_custom_analyzer.”
 
-00:00:37,100  -->  00:00:42,820
-Particularly, let’s add a “description”
-field that uses the analyzer named “my_custom_analyzer.”
+An index is not much fun without any documents in it, so let’s index a document.
 
-10
+Next, I have a fairly simple search query that searches the “description” field
 
-00:00:44,800  -->  00:00:50,400
-An index is not much fun without any documents
-in it, so let’s index a document.
-
-11
-
-00:00:54,200  -->  00:00:58,960
-Next, I have a fairly simple search query
-that searches the “description” field
-
-12
-
-00:00:58,960  -->  00:01:00,380
 for the term “that.”
 
-13
+There is one unusual thing about this query, though; it specifies an analyzer.
 
-00:01:01,600  -->  00:01:06,960
-There is one unusual thing about this query,
-though; it specifies an analyzer.
+By default, the analyzer from the “description” field’s mapping would be used to analyze
 
-14
-
-00:01:07,580  -->  00:01:12,620
-By default, the analyzer from the “description”
-field’s mapping would be used to analyze
-
-15
-
-00:01:12,620  -->  00:01:16,840
 the query, being the analyzer named “my_custom_analyzer.”
 
-16
+Analyzing the query with this particular analyzer, would remove the word “that” from the
 
-00:01:17,800  -->  00:01:23,140
-Analyzing the query with this particular analyzer,
-would remove the word “that” from the
+query, causing us to essentially search for nothing.
 
-17
+That’s because the analyzer is configured to remove stop words.
 
-00:01:23,140  -->  00:01:26,580
-query, causing us to essentially search for
-nothing.
+This default behavior is overridden when specifying the “analyzer” parameter.
 
-18
+The “keyword” analyzer is then used instead, which essentially means that the search query
 
-00:01:27,660  -->  00:01:31,300
-That’s because the analyzer is configured
-to remove stop words.
-
-19
-
-00:01:32,320  -->  00:01:37,260
-This default behavior is overridden when specifying
-the “analyzer” parameter.
-
-20
-
-00:01:37,920  -->  00:01:43,460
-The “keyword” analyzer is then used instead,
-which essentially means that the search query
-
-21
-
-00:01:43,460  -->  00:01:44,880
 will be left intact.
 
-22
+Our example document was indexed using the custom analyzer, and so stop words were removed.
 
-00:01:45,960  -->  00:01:51,840
-Our example document was indexed using the
-custom analyzer, and so stop words were removed.
+The term “that” therefore doesn’t appear within the inverted index for the “description”field.
 
-23
-
-00:01:52,880  -->  00:01:58,160
-The term “that” therefore doesn’t appear
-within the inverted index for the “description”field.
-
-24
-
-00:01:58,860  -->  00:02:01,220
 You can see the inverted index to the right.
 
-25
-
-00:02:02,600  -->  00:02:04,680
 So what’s the point of this?
 
-26
+Specifying the “keyword” analyzer is a trick to avoid removing stop words from the
 
-00:02:05,240  -->  00:02:10,140
-Specifying the “keyword” analyzer is a
-trick to avoid removing stop words from the
+query, because we actually want to know if the document contains the term “that.”
 
-27
-
-00:02:10,140  -->  00:02:15,300
-query, because we actually want to know if
-the document contains the term “that.”
-
-28
-
-00:02:15,960  -->  00:02:17,620
 You will see why in a moment.
 
-29
+Sorry if this got a bit confusing, but hopefully it will all make sense in a moment.
 
-00:02:18,200  -->  00:02:23,200
-Sorry if this got a bit confusing, but hopefully
-it will all make sense in a moment.
+If we run the query, we should see that no documents are matched.
 
-30
+That’s because we are searching for the term “that,” which is a stop word, and
 
-00:02:24,580  -->  00:02:28,500
-If we run the query, we should see that no
-documents are matched.
-
-31
-
-00:02:32,140  -->  00:02:37,000
-That’s because we are searching for the
-term “that,” which is a stop word, and
-
-32
-
-00:02:37,000  -->  00:02:39,780
 hence it was removed when indexing the document.
 
-33
-
-00:02:40,380  -->  00:02:42,980
 In other words, that’s to be expected.
 
-34
-
-00:02:44,140  -->  00:02:46,740
 Let’s now actually get to updating the analyzer.
 
-35
+We do that with the Update Index Settings API as you have already seen.
 
-00:02:47,360  -->  00:02:52,000
-We do that with the Update Index Settings
-API as you have already seen.
+We just specify the full analyzer as if it didn’t already exist.
 
-36
+In the query that you see on your screen, I have removed the “stop” token filter,
 
-00:02:52,860  -->  00:02:57,000
-We just specify the full analyzer as if it
-didn’t already exist.
-
-37
-
-00:02:58,180  -->  00:03:03,079
-In the query that you see on your screen,
-I have removed the “stop” token filter,
-
-38
-
-00:03:03,080  -->  00:03:05,540
 because I no longer want to remove stop words.
 
-39
+As when adding a new analyzer to an index, we need to close the index before we can modify
 
-00:03:06,840  -->  00:03:12,620
-As when adding a new analyzer to an index,
-we need to close the index before we can modify
-
-40
-
-00:03:12,620  -->  00:03:13,420
 the analyzer.
 
-41
+Now that the index has been closed, we are ready to update the analyzer.
 
-00:03:19,300  -->  00:03:23,000
-Now that the index has been closed, we are
-ready to update the analyzer.
+That was the only modification we needed to do, so let’s reopen the index.
 
-42
+Just to prove to you that the analyzer has indeed been updated, let’s quickly retrieve
 
-00:03:26,480  -->  00:03:30,740
-That was the only modification we needed to
-do, so let’s reopen the index.
-
-43
-
-00:03:34,500  -->  00:03:39,420
-Just to prove to you that the analyzer has
-indeed been updated, let’s quickly retrieve
-
-44
-
-00:03:39,440  -->  00:03:40,980
 the index’ settings.
 
-45
+Indeed we can see that the analyzer no longer contains the “stop” token filter.
 
-00:03:44,740  -->  00:03:49,280
-Indeed we can see that the analyzer no longer
-contains the “stop” token filter.
+Let’s now index another document with the same value as the first one, so I will just
 
-46
-
-00:03:50,340  -->  00:03:55,120
-Let’s now index another document with the
-same value as the first one, so I will just
-
-47
-
-00:03:55,120  -->  00:03:56,660
 run the same query again.
 
-48
+Running the search query again should give us a different result compared to the first
 
-00:04:01,500  -->  00:04:06,120
-Running the search query again should give
-us a different result compared to the first
-
-49
-
-00:04:06,120  -->  00:04:07,300
 time we ran it.
 
-50
+This time around one document is matched, being the one we just indexed.
 
-00:04:10,020  -->  00:04:14,660
-This time around one document is matched,
-being the one we just indexed.
+What happened was that the second document was indexed with the updated analyzer which
 
-51
-
-00:04:15,140  -->  00:04:20,540
-What happened was that the second document
-was indexed with the updated analyzer which
-
-52
-
-00:04:20,540  -->  00:04:22,520
 did not remove any stop words.
 
-53
+As a result, the inverted index for the “description” field does contain the term “that,” unlike
 
-00:04:23,240  -->  00:04:29,560
-As a result, the inverted index for the “description”
-field does contain the term “that,” unlike
-
-54
-
-00:04:29,560  -->  00:04:30,780
 for the first document.
 
-55
+Hopefully that makes sense, but it also raises a red flag.
 
-00:04:31,320  -->  00:04:35,440
-Hopefully that makes sense, but it also raises
-a red flag.
+Our index now contains documents that were analyzed in two different ways, which can
 
-56
-
-00:04:36,280  -->  00:04:42,180
-Our index now contains documents that were
-analyzed in two different ways, which can
-
-57
-
-00:04:42,180  -->  00:04:43,840
 lead to a number of issues.
 
-58
+Search queries will use the latest version of the analyzer by default, but some documents
 
-00:04:44,900  -->  00:04:50,820
-Search queries will use the latest version
-of the analyzer by default, but some documents
-
-59
-
-00:04:50,820  -->  00:04:53,000
 were analyzed using the old version.
 
-60
+That can lead to quite unpredictable search results.
 
-00:04:54,100  -->  00:04:56,840
-That can lead to quite unpredictable search
-results.
+In this example, two documents contain the same value for the “description” field
 
-61
+within the “_source” object, but only one matches the query.
 
-00:04:57,840  -->  00:05:02,640
-In this example, two documents contain the
-same value for the “description” field
+That’s probably not what you would expect if you were unaware that the analyzer had
 
-62
-
-00:05:02,640  -->  00:05:06,960
-within the “_source” object, but only
-one matches the query.
-
-63
-
-00:05:07,420  -->  00:05:12,060
-That’s probably not what you would expect
-if you were unaware that the analyzer had
-
-64
-
-00:05:12,060  -->  00:05:14,760
 been changed after indexing documents.
 
-65
+We therefore need to handle this to avoid causing ourselves some massive headaches.
 
-00:05:15,820  -->  00:05:20,560
-We therefore need to handle this to avoid
-causing ourselves some massive headaches.
+We could reindex documents into a new index, causing them to be analyzed with the new analyzer.
 
-66
+There is a simpler approach, though; using the Update By Query API, which you hopefully
 
-00:05:21,340  -->  00:05:27,260
-We could reindex documents into a new index,
-causing them to be analyzed with the new analyzer.
-
-67
-
-00:05:28,180  -->  00:05:33,760
-There is a simpler approach, though; using
-the Update By Query API, which you hopefully
-
-68
-
-00:05:33,760  -->  00:05:35,760
 remember from earlier in the course.
 
-69
+Besides updating documents with a script, this API can actually be used for a different
 
-00:05:37,040  -->  00:05:43,040
-Besides updating documents with a script,
-this API can actually be used for a different
-
-70
-
-00:05:43,040  -->  00:05:45,760
 purpose as well; reindexing values.
 
-71
+That’s what we need in this case, because we want the first document to be reindexed
 
-00:05:46,400  -->  00:05:50,960
-That’s what we need in this case, because
-we want the first document to be reindexed
-
-72
-
-00:05:50,960  -->  00:05:53,200
 with the updated analyzer in place.
 
-73
+We can simply do that with the last query that I have prepared.
 
-00:05:54,160  -->  00:05:57,380
-We can simply do that with the last query
-that I have prepared.
+It reindexes all documents since no “query” parameter is specified.
 
-74
+It’s possible to limit the scope of the query to specific documents, but we don’t
 
-00:05:58,520  -->  00:06:03,280
-It reindexes all documents since no “query”
-parameter is specified.
-
-75
-
-00:06:03,900  -->  00:06:08,960
-It’s possible to limit the scope of the
-query to specific documents, but we don’t
-
-76
-
-00:06:08,960  -->  00:06:09,740
 do that now.
 
-77
-
-00:06:10,120  -->  00:06:11,000
 Let’s run the query.
 
-78
+The results state that two documents were updated.
 
-00:06:15,760  -->  00:06:18,900
-The results state that two documents were
-updated.
-
-79
-
-00:06:19,480  -->  00:06:21,320
 Let’s now run the search query again.
 
-80
-
-00:06:24,780  -->  00:06:25,800
 And there we go!
 
-81
+Both documents now match the query, because the first document that we indexed has now
 
-00:06:26,060  -->  00:06:31,260
-Both documents now match the query, because
-the first document that we indexed has now
-
-82
-
-00:06:31,260  -->  00:06:33,980
 been analyzed using the updated analyzer.
 
-83
+Apart from simply updating an analyzer, we took a quick detour to also discover a potential
 
-00:06:35,180  -->  00:06:41,040
-Apart from simply updating an analyzer, we
-took a quick detour to also discover a potential
-
-84
-
-00:06:41,040  -->  00:06:42,880
 problem with doing so.
 
-85
+I wanted to show you that, because if we are not careful, updating analyzers can cause
 
-00:06:43,200  -->  00:06:48,400
-I wanted to show you that, because if we are
-not careful, updating analyzers can cause
-
-86
-
-00:06:48,400  -->  00:06:49,860
 us all kinds of trouble.
 
-87
+Always try to get your analyzers right the first time, i.e. before indexing documents.
 
-00:06:50,780  -->  00:06:56,320
-Always try to get your analyzers right the
-first time, i.e. before indexing documents.
+Sometimes it is perfectly valid to have to change the configuration of an analyzer, though.
 
-88
+You just need to handle the situation appropriately and everything should be fine.
 
-00:06:57,220  -->  00:07:02,200
-Sometimes it is perfectly valid to have to
-change the configuration of an analyzer, though.
-
-89
-
-00:07:02,780  -->  00:07:07,340
-You just need to handle the situation appropriately
-and everything should be fine.

@@ -1,112 +1,41 @@
-1
+Transcript
+Now that you have seen both explicit and dynamic mapping, which one should you choose, then?
 
-00:00:02,340  -->  00:00:07,720
-Now that you have seen both explicit and dynamic
-mapping, which one should you choose, then?
+I will give you some recommendations in a couple of lectures, but you don’t necessarily
 
-2
-
-00:00:08,300  -->  00:00:13,320
-I will give you some recommendations in a
-couple of lectures, but you don’t necessarily
-
-3
-
-00:00:13,320  -->  00:00:15,060
 have to choose one or the other.
 
-4
+That’s because the two approaches can actually complement each other.
 
-00:00:15,640  -->  00:00:19,580
-That’s because the two approaches can actually
-complement each other.
-
-5
-
-00:00:20,080  -->  00:00:21,520
 Let me show you an example.
 
-6
-
-00:00:22,460  -->  00:00:25,200
 I have prepared a couple of queries in advance.
 
-7
+The first one creates a new index named “people” with a “text” mapping for a “first_name” field.
 
-00:00:25,740  -->  00:00:31,460
-The first one creates a new index named “people”
-with a “text” mapping for a “first_name” field.
-
-8
-
-00:00:31,760  -->  00:00:32,820
 Nothing new here.
 
-9
+I have run that query in advance, and you can see the mapping to the right.
 
-00:00:33,520  -->  00:00:37,580
-I have run that query in advance, and you
-can see the mapping to the right.
+Let’s now index a document containing both a first and last name.
 
-10
+There is no mapping for the “last_name” field, so what do you think will happen?
 
-00:00:38,620  -->  00:00:42,680
-Let’s now index a document containing both
-a first and last name.
-
-11
-
-00:00:43,340  -->  00:00:47,640
-There is no mapping for the “last_name”
-field, so what do you think will happen?
-
-12
-
-00:00:48,200  -->  00:00:50,600
 I’m sure you guessed it, but let’s see.
 
-13
-
-00:00:53,520  -->  00:00:55,440
 Let’s then retrieve the mapping again.
 
-14
+Perhaps unsurprisingly, the “last_name” field has now been mapped.
 
-00:00:58,580  -->  00:01:02,620
-Perhaps unsurprisingly, the “last_name”
-field has now been mapped.
+That’s because dynamic mapping is enabled by default and a mapping didn’t exist already.
 
-15
+Elasticsearch will then create a field mapping automatically in exactly the same way as you
 
-00:01:03,180  -->  00:01:09,020
-That’s because dynamic mapping is enabled
-by default and a mapping didn’t exist already.
-
-16
-
-00:01:09,680  -->  00:01:15,000
-Elasticsearch will then create a field mapping
-automatically in exactly the same way as you
-
-17
-
-00:01:15,000  -->  00:01:16,620
 saw in the previous lecture.
 
-18
+The difference here is just that we already had mappings, just not for that particular field.
 
-00:01:17,180  -->  00:01:22,360
-The difference here is just that we already
-had mappings, just not for that particular field.
+That’s really all I wanted to show you in this lecture; that explicit and dynamic mapping
 
-19
+can be combined, so you don’t necessarily have to choose one or the other.
 
-00:01:23,580  -->  00:01:28,920
-That’s really all I wanted to show you in
-this lecture; that explicit and dynamic mapping
-
-20
-
-00:01:28,939  -->  00:01:33,219
-can be combined, so you don’t necessarily
-have to choose one or the other.

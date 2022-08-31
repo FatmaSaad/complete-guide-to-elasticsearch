@@ -1,872 +1,305 @@
-1
+Transcript
+Another way in which we can configure dynamic mapping is by using so-called dynamic templates.
 
-00:00:02,600  -->  00:00:08,860
-Another way in which we can configure dynamic
-mapping is by using so-called dynamic templates.
+A dynamic template consists of one or more conditions along with the mapping a field
 
-2
-
-00:00:09,400  -->  00:00:14,580
-A dynamic template consists of one or more
-conditions along with the mapping a field
-
-3
-
-00:00:14,580  -->  00:00:17,160
 should use if it matches the conditions.
 
-4
+Dynamic templates are used when dynamic mapping is enabled and a new field is encountered
 
-00:00:17,840  -->  00:00:22,960
-Dynamic templates are used when dynamic mapping
-is enabled and a new field is encountered
-
-5
-
-00:00:22,960  -->  00:00:24,940
 without any existing mapping.
 
-6
+Let’s get straight to business so you can see what I mean.
 
-00:00:26,180  -->  00:00:28,840
-Let’s get straight to business so you can
-see what I mean.
+I have a partial query prepared, which will add a new throwaway index.
 
-7
+Dynamic templates are added within a key named “dynamic_templates,” nested within the “mappings” key.
 
-00:00:29,580  -->  00:00:34,060
-I have a partial query prepared, which will
-add a new throwaway index.
+Each dynamic template should be an object within this array, so let’s add an empty object.
 
-8
-
-00:00:35,460  -->  00:00:41,900
-Dynamic templates are added within a key named
-“dynamic_templates,” nested within the “mappings” key.
-
-9
-
-00:00:52,200  -->  00:00:57,820
-Each dynamic template should be an object
-within this array, so let’s add an empty object.
-
-10
-
-00:00:59,340  -->  00:01:05,340
 Within this object we add a key with the name of the dynamic template, which can be anything we want.
 
-11
-
-00:01:05,880  -->  00:01:07,200
 Its value should be an object.
 
-12
-
-00:01:08,140  -->  00:01:10,040
 I will name the template “integers.”
 
-13
-
-00:01:10,060  -->  00:01:11,880
 You will see why in a moment.
 
-14
-
-00:01:15,200  -->  00:01:21,720
 The first thing we need to do is to define when this template should kick in, i.e. a match condition.
 
-15
+As you will see in a moment, there are several ways of doing this, but let’s begin with
 
-00:01:22,420  -->  00:01:27,620
-As you will see in a moment, there are several
-ways of doing this, but let’s begin with
+the simplest one; matching based on the detected data type.
 
-16
+I will quickly type that out and explain it afterwards.
 
-00:01:27,620  -->  00:01:31,760
-the simplest one; matching based on the detected
-data type.
+We are not done yet, but let’s take a moment to talk about this parameter.
 
-17
+The “match_mapping_type” parameter is used to match a given JSON data type.
 
-00:01:32,340  -->  00:01:35,700
-I will quickly type that out and explain it
-afterwards.
+On your screen you can see a table listing JSON data types and which value should be
 
-18
+used for the parameter within the dynamic template.
 
-00:01:42,660  -->  00:01:46,640
-We are not done yet, but let’s take a moment
-to talk about this parameter.
+It’s important to note that the values to the right are not the data types that fields
 
-19
+will be mapped as; we will define those in a moment.
 
-00:01:48,100  -->  00:01:52,720
-The “match_mapping_type” parameter is
-used to match a given JSON data type.
+It’s also worth noting that “double” is used for numbers with a decimal, since
 
-20
+there is no way of distinguishing a “double” from a “float” in JSON.
 
-00:01:53,900  -->  00:01:59,240
-On your screen you can see a table listing
-JSON data types and which value should be
+Likewise, we also cannot distinguish between an “integer” and a “long.”
 
-21
+As a result, the wider data type will always be chosen.
 
-00:01:59,240  -->  00:02:02,620
-used for the parameter within the dynamic
-template.
+If we go back to the query that we are working on, we set the match type to “long,” meaning
 
-22
+that the template will be applied to whole numbers.
 
-00:02:03,700  -->  00:02:08,460
-It’s important to note that the values to
-the right are not the data types that fields
+We still haven’t defined what should happen if the condition matches, so let’s do that now.
 
-23
+What we have to do is to define a field mapping that should be used if our condition matches.
 
-00:02:08,460  -->  00:02:12,140
-will be mapped as; we will define those in
-a moment.
+This is done within a “mapping” parameter, which should be in the same format as the
 
-24
-
-00:02:12,800  -->  00:02:17,660
-It’s also worth noting that “double”
-is used for numbers with a decimal, since
-
-25
-
-00:02:17,660  -->  00:02:21,420
-there is no way of distinguishing a “double”
-from a “float” in JSON.
-
-26
-
-00:02:22,360  -->  00:02:26,780
-Likewise, we also cannot distinguish between
-an “integer” and a “long.”
-
-27
-
-00:02:27,760  -->  00:02:31,660
-As a result, the wider data type will always
-be chosen.
-
-28
-
-00:02:33,100  -->  00:02:38,500
-If we go back to the query that we are working
-on, we set the match type to “long,” meaning
-
-29
-
-00:02:38,500  -->  00:02:41,400
-that the template will be applied to whole
-numbers.
-
-30
-
-00:02:42,020  -->  00:02:47,080
-We still haven’t defined what should happen
-if the condition matches, so let’s do that now.
-
-31
-
-00:02:48,140  -->  00:02:53,360
-What we have to do is to define a field mapping
-that should be used if our condition matches.
-
-32
-
-00:02:54,540  -->  00:02:59,040
-This is done within a “mapping” parameter,
-which should be in the same format as the
-
-33
-
-00:02:59,040  -->  00:03:01,200
 field mappings you have previously seen.
 
-34
+This means that we can define the data type that should be used, so let’s do that.
 
-00:03:01,860  -->  00:03:06,380
-This means that we can define the data type
-that should be used, so let’s do that.
+That’s the most basic structure of a dynamic template.
 
-35
+We defined a condition that evaluates to true if the detected JSON data type is “long,”
 
-00:03:16,980  -->  00:03:20,160
-That’s the most basic structure of a dynamic
-template.
+in which case the field mapping will be as specified.
 
-36
+In this example, this means that dynamic field mappings will not use the “long” data
 
-00:03:20,660  -->  00:03:26,240
-We defined a condition that evaluates to true
-if the detected JSON data type is “long,”
+type as would otherwise be the default behavior, but the “integer” data type instead.
 
-37
+If we wanted to, we could add mapping parameters to the field mapping as well, but let’s
 
-00:03:26,240  -->  00:03:29,600
-in which case the field mapping will be as
-specified.
-
-38
-
-00:03:30,760  -->  00:03:35,980
-In this example, this means that dynamic field
-mappings will not use the “long” data
-
-39
-
-00:03:35,980  -->  00:03:41,060
-type as would otherwise be the default behavior,
-but the “integer” data type instead.
-
-40
-
-00:03:41,840  -->  00:03:47,080
-If we wanted to, we could add mapping parameters
-to the field mapping as well, but let’s
-
-41
-
-00:03:47,080  -->  00:03:48,620
 keep things simple for now.
 
-42
-
-00:03:49,620  -->  00:03:52,340
 Let’s run the query to create the index.
 
-43
+Let’s now index a simple document with a field that matches the condition that we defined.
 
-00:03:54,500  -->  00:03:59,820
-Let’s now index a simple document with a
-field that matches the condition that we defined.
+By default, this new field would be mapped as a “long” field, so if everything works
 
-44
+as intended, we should see it being mapped as an “integer” instead.
 
-00:04:15,580  -->  00:04:20,880
-By default, this new field would be mapped
-as a “long” field, so if everything works
-
-45
-
-00:04:20,880  -->  00:04:25,080
-as intended, we should see it being mapped
-as an “integer” instead.
-
-46
-
-00:04:25,660  -->  00:04:27,760
 Let’s inspect the mapping and take a look.
 
-47
+Indeed we can see that the field was mapped as an “integer,” so the dynamic template
 
-00:04:36,300  -->  00:04:41,000
-Indeed we can see that the field was mapped
-as an “integer,” so the dynamic template
-
-48
-
-00:04:41,000  -->  00:04:42,240
 worked as intended.
 
-49
+If you don’t want to just take my word for it, you can of course test the difference
 
-00:04:43,380  -->  00:04:47,580
-If you don’t want to just take my word for
-it, you can of course test the difference
-
-50
-
-00:04:47,580  -->  00:04:49,360
 with and without the template.
 
-51
+Another example of a dynamic template could be to adjust how strings are mapped.
 
-00:04:50,840  -->  00:04:55,800
-Another example of a dynamic template could
-be to adjust how strings are mapped.
+As you know, they are mapped as both a “text” mapping and a “keyword” mapping by default.
 
-52
+That might be what you want, but it could also be the case that you only want one of them.
 
-00:04:56,460  -->  00:05:01,820
-As you know, they are mapped as both a “text”
-mapping and a “keyword” mapping by default.
+Or perhaps you want to change the value of the “ignore_above” parameter or get rid
 
-53
-
-00:05:02,880  -->  00:05:08,240
-That might be what you want, but it could
-also be the case that you only want one of them.
-
-54
-
-00:05:09,040  -->  00:05:13,800
-Or perhaps you want to change the value of
-the “ignore_above” parameter or get rid
-
-55
-
-00:05:13,800  -->  00:05:15,060
 of it altogether.
 
-56
+Whatever the case, that would be a good use of a dynamic template.
 
-00:05:16,420  -->  00:05:20,420
-Whatever the case, that would be a good use
-of a dynamic template.
+The example you see on your screen now shows how string values can be mapped according
 
-57
+to the default rules, with the exception that the “ignore_above” parameter now contains
 
-00:05:21,120  -->  00:05:26,360
-The example you see on your screen now shows
-how string values can be mapped according
-
-58
-
-00:05:26,360  -->  00:05:31,550
-to the default rules, with the exception that
-the “ignore_above” parameter now contains
-
-59
-
-00:05:31,550  -->  00:05:36,280
 a value of 512 instead of 256.
 
-60
+That’s probably of limited use, but hopefully you get the point of how the default mapping
 
-00:05:37,540  -->  00:05:42,840
-That’s probably of limited use, but hopefully
-you get the point of how the default mapping
-
-61
-
-00:05:42,840  -->  00:05:45,440
 rules can be tweaked to fit your needs.
 
-62
+Let’s now move on to slightly more advanced dynamic templates.
 
-00:05:47,020  -->  00:05:50,560
-Let’s now move on to slightly more advanced
-dynamic templates.
+I don’t want to spend a lot of time typing out the queries, so I will just show them
 
-63
-
-00:05:51,020  -->  00:05:55,500
-I don’t want to spend a lot of time typing
-out the queries, so I will just show them
-
-64
-
-00:05:55,500  -->  00:05:58,040
 on some slides and explain what they do.
 
-65
+As always, you can find the queries within the GitHub repository if you want to run them.
 
-00:05:58,620  -->  00:06:03,540
-As always, you can find the queries within
-the GitHub repository if you want to run them.
+Besides simply matching based on the detected JSON data type, we have a number of other
 
-66
+options available, so let’s go through them one by one.
 
-00:06:05,200  -->  00:06:10,600
-Besides simply matching based on the detected
-JSON data type, we have a number of other
+First up, we have the “match” and “unmatch” parameters.
 
-67
+These parameters enable us to specify conditions for the name of the field being evaluated.
 
-00:06:10,600  -->  00:06:13,840
-options available, so let’s go through them
-one by one.
+The “match” parameter is used to specify a pattern that the field name must match.
 
-68
+The “unmatch” parameter can then be used to specify a pattern that excludes certain
 
-00:06:15,580  -->  00:06:19,380
-First up, we have the “match” and “unmatch”
-parameters.
+fields that are matched by the “match” parameter.
 
-69
-
-00:06:20,160  -->  00:06:25,500
-These parameters enable us to specify conditions
-for the name of the field being evaluated.
-
-70
-
-00:06:26,440  -->  00:06:31,360
-The “match” parameter is used to specify
-a pattern that the field name must match.
-
-71
-
-00:06:32,180  -->  00:06:36,760
-The “unmatch” parameter can then be used
-to specify a pattern that excludes certain
-
-72
-
-00:06:36,780  -->  00:06:39,660
-fields that are matched by the “match”
-parameter.
-
-73
-
-00:06:40,800  -->  00:06:42,240
 I hope that makes sense.
 
-74
-
-00:06:42,840  -->  00:06:45,480
 Otherwise you will see an example in a moment.
 
-75
+Notice how I mentioned the word “pattern” a couple of times for both of the parameters.
 
-00:06:46,740  -->  00:06:51,840
-Notice how I mentioned the word “pattern”
-a couple of times for both of the parameters.
+That’s because both of them support wildcards with the asterisk symbol.
 
-76
+This makes sense, because hard coding specific field names into dynamic templates probably
 
-00:06:52,480  -->  00:06:56,560
-That’s because both of them support wildcards
-with the asterisk symbol.
-
-77
-
-00:06:57,260  -->  00:07:02,780
-This makes sense, because hard coding specific
-field names into dynamic templates probably
-
-78
-
-00:07:02,780  -->  00:07:04,740
 doesn’t make much sense.
 
-79
+Let’s take a look at an example of how these parameters can be used.
 
-00:07:05,660  -->  00:07:09,460
-Let’s take a look at an example of how these
-parameters can be used.
+The first thing to notice is how this example actually includes two dynamic templates.
 
-80
+In situations where there are more than one, the templates are processed in order, and
 
-00:07:10,980  -->  00:07:16,260
-The first thing to notice is how this example
-actually includes two dynamic templates.
-
-81
-
-00:07:16,740  -->  00:07:21,960
-In situations where there are more than one,
-the templates are processed in order, and
-
-82
-
-00:07:21,960  -->  00:07:23,880
 the first matching template wins.
 
-83
+The first template matches fields where the name begins with the string “text” and an underscore.
 
-00:07:24,960  -->  00:07:30,540
-The first template matches fields where the
-name begins with the string “text” and an underscore.
-
-84
-
-00:07:31,260  -->  00:07:36,720
 The “unmatch” parameter then filters out fields that end with an underscore and the string “keyword.”
 
-85
+What this template does is therefore to map string values to “text” fields — provided
 
-00:07:37,420  -->  00:07:43,560
-What this template does is therefore to map
-string values to “text” fields — provided
+that the field name matches the pattern defined by the “match” parameter and doesn’t
 
-86
+match the pattern defined by the “unmatch” parameter.
 
-00:07:43,560  -->  00:07:48,260
-that the field name matches the pattern defined
-by the “match” parameter and doesn’t
+Fields names that end with an underscore followed by the string “keyword” are caught by
 
-87
+the second template that maps them as “keyword” fields.
 
-00:07:48,260  -->  00:07:51,280
-match the pattern defined by the “unmatch”
-parameter.
+This means that if we run this query… we will get this mapping.
 
-88
+The description field matched the first template, whereas the product ID field matched the second.
 
-00:07:52,500  -->  00:07:56,880
-Fields names that end with an underscore followed
-by the string “keyword” are caught by
+Did you notice how both of the templates included the “match_mapping_type” parameter as well?
 
-89
+That’s because we can include more than one condition within a dynamic template; the
 
-00:07:56,880  -->  00:08:00,260
-the second template that maps them as “keyword”
-fields.
+parameters that you have seen — and will see — can all be combined to form a set
 
-90
+of match conditions, so you are not limited to just one.
 
-00:08:00,780  -->  00:08:05,500
-This means that if we run this query… we
-will get this mapping.
+Using the “match” and “unmatch” parameters is useful for using naming conventions as
 
-91
-
-00:08:06,800  -->  00:08:12,820
-The description field matched the first template,
-whereas the product ID field matched the second.
-
-92
-
-00:08:14,080  -->  00:08:19,240
-Did you notice how both of the templates included
-the “match_mapping_type” parameter as well?
-
-93
-
-00:08:20,140  -->  00:08:25,220
-That’s because we can include more than
-one condition within a dynamic template; the
-
-94
-
-00:08:25,280  -->  00:08:30,040
-parameters that you have seen — and will
-see — can all be combined to form a set
-
-95
-
-00:08:30,040  -->  00:08:33,700
-of match conditions, so you are not limited
-to just one.
-
-96
-
-00:08:35,340  -->  00:08:40,440
-Using the “match” and “unmatch” parameters
-is useful for using naming conventions as
-
-97
-
-00:08:40,460  -->  00:08:42,420
 a way of applying field mappings.
 
-98
+If we need more flexibility than what the “match” parameter provides with wildcards,
 
-00:08:43,340  -->  00:08:48,160
-If we need more flexibility than what the
-“match” parameter provides with wildcards,
+we can set a parameter named “match_pattern” to “regex.”
 
-99
-
-00:08:48,560  -->  00:08:52,620
-we can set a parameter named “match_pattern”
-to “regex.”
-
-100
-
-00:08:53,360  -->  00:08:59,420
 What this does, is to adjust the behavior of the “match” parameter to support regular expressions.
 
-101
+In this case the regular expression matches strings that end with “_name.”
 
-00:09:00,100  -->  00:09:04,720
-In this case the regular expression matches
-strings that end with “_name.”
+Adding a document with these three field names... will therefore create the following mapping.
 
-102
+This approach is useful in situations where simple wildcards are not enough and you need
 
-00:09:05,980  -->  00:09:11,280
-Adding a document with these three field names...
-will therefore create the following mapping.
-
-103
-
-00:09:12,800  -->  00:09:18,280
-This approach is useful in situations where
-simple wildcards are not enough and you need
-
-104
-
-00:09:18,280  -->  00:09:20,780
 the flexibility of regular expressions.
 
-105
+Very similar to the “match” and “unmatch” parameters, we have the “path_match” and
 
-00:09:22,140  -->  00:09:27,620
-Very similar to the “match” and “unmatch”
-parameters, we have the “path_match” and
-
-106
-
-00:09:27,620  -->  00:09:30,020
 “path_unmatch” parameters.
 
-107
+The difference is that these parameters match the full field path, instead of just the field name itself.
 
-00:09:30,700  -->  00:09:36,780
-The difference is that these parameters match
-the full field path, instead of just the field name itself.
+To be clear, by “full path” I am referring to the dotted path.
 
-108
+For instance, you might have a “name” object containing a “first_name” key,
 
-00:09:37,800  -->  00:09:42,220
-To be clear, by “full path” I am referring
-to the dotted path.
-
-109
-
-00:09:43,340  -->  00:09:47,940
-For instance, you might have a “name”
-object containing a “first_name” key,
-
-110
-
-00:09:48,300  -->  00:09:51,480
 in which case the path would be “name.first_name.”
 
-111
-
-00:09:52,220  -->  00:09:55,140
 We can also use wildcards within these paths.
 
-112
-
-00:09:55,580  -->  00:09:56,960
 Let’s look at an example.
 
-113
+Here we use the “path_match” parameter to match any name part.
 
-00:09:57,960  -->  00:10:02,260
-Here we use the “path_match” parameter
-to match any name part.
+The “name” object will contain three keys; “first_name,” “middle_name,” and “last_name.”
 
-114
-
-00:10:03,040  -->  00:10:08,580
-The “name” object will contain three keys;
-“first_name,” “middle_name,” and “last_name.”
-
-115
-
-00:10:09,600  -->  00:10:11,700
 The wildcard matches all of these.
 
-116
+I haven’t added the “path_unmatch” parameter, but it behaves the same as the “unmatch”
 
-00:10:12,460  -->  00:10:17,960
-I haven’t added the “path_unmatch” parameter,
-but it behaves the same as the “unmatch”
+parameter, except that it considers the field path.
 
-117
+What I have added, though, is the “copy_to” mapping parameter, which copies values into
 
-00:10:17,960  -->  00:10:21,060
-parameter, except that it considers the field
-path.
-
-118
-
-00:10:21,920  -->  00:10:28,280
-What I have added, though, is the “copy_to”
-mapping parameter, which copies values into
-
-119
-
-00:10:28,280  -->  00:10:29,600
 the specified field.
 
-120
+In this case it enables us to query the full name as a single field, instead of having
 
-00:10:30,460  -->  00:10:36,020
-In this case it enables us to query the full
-name as a single field, instead of having
-
-121
-
-00:10:36,020  -->  00:10:38,120
 to query three different fields.
 
-122
+Adding the following document... will therefore cause the following mapping to be created.
 
-00:10:38,900  -->  00:10:43,740
-Adding the following document... will therefore
-cause the following mapping to be created.
+A mapping will also be created for the “full_name” field, but I have omitted it from this diagram.
 
-123
+It will be created using the default dynamic mapping rule for string values, meaning that
 
-00:10:44,780  -->  00:10:50,360
-A mapping will also be created for the “full_name”
-field, but I have omitted it from this diagram.
+it will be mapped as both a “text” and “keyword” field.
 
-124
+Just one thing left to cover before we are done.
 
-00:10:51,000  -->  00:10:56,340
-It will be created using the default dynamic
-mapping rule for string values, meaning that
+Within the “mapping” key of a dynamic template, you can make use of two placeholders.
 
-125
+The first one is named “dynamic_type,” which you can see in use on your screen.
 
-00:10:56,340  -->  00:10:59,440
-it will be mapped as both a “text” and
-“keyword” field.
-
-126
-
-00:11:00,780  -->  00:11:03,240
-Just one thing left to cover before we are
-done.
-
-127
-
-00:11:04,120  -->  00:11:08,800
-Within the “mapping” key of a dynamic
-template, you can make use of two placeholders.
-
-128
-
-00:11:09,480  -->  00:11:15,080
-The first one is named “dynamic_type,”
-which you can see in use on your screen.
-
-129
-
-00:11:16,460  -->  00:11:22,860
 We can use placeholders within string values by enclosing the placeholder name within curly brackets.
 
-130
-
-00:11:23,960  -->  00:11:29,980
 The “dynamic_type” placeholder is replaced with the data type that was detected by dynamic mapping.
 
-131
+This template matches all data types and adds a mapping of that same data type.
 
-00:11:31,440  -->  00:11:36,820
-This template matches all data types and adds
-a mapping of that same data type.
+If we didn’t have this placeholder at our disposal, we would have to add a dynamic template
 
-132
-
-00:11:37,460  -->  00:11:42,360
-If we didn’t have this placeholder at our
-disposal, we would have to add a dynamic template
-
-133
-
-00:11:42,380  -->  00:11:46,300
 for each data type, which would be quite inconvenient.
 
-134
+The purpose of this template is to set the “index” parameter to “false.”
 
-00:11:47,840  -->  00:11:52,440
-The purpose of this template is to set the
-“index” parameter to “false.”
+The data type is going to be the same as it otherwise would be with dynamic mapping.
 
-135
+This particular example with disabling indexing could be used for time series data.
 
-00:11:53,740  -->  00:11:58,120
-The data type is going to be the same as it
-otherwise would be with dynamic mapping.
+Perhaps you recall me mentioning that this is a common optimization for time series data
 
-136
+where you typically don’t need to filter on specific values, but rather aggregate by
 
-00:11:58,680  -->  00:12:03,580
-This particular example with disabling indexing
-could be used for time series data.
-
-137
-
-00:12:05,220  -->  00:12:10,960
-Perhaps you recall me mentioning that this
-is a common optimization for time series data
-
-138
-
-00:12:11,060  -->  00:12:16,180
-where you typically don’t need to filter
-on specific values, but rather aggregate by
-
-139
-
-00:12:16,180  -->  00:12:17,480
 time intervals.
 
-140
+Another optimization for time series data is to disable norms, which you can do in exactly
 
-00:12:18,980  -->  00:12:25,160
-Another optimization for time series data
-is to disable norms, which you can do in exactly
-
-141
-
-00:12:25,160  -->  00:12:26,300
 the same way.
 
-142
+Anyway, let’s check the mapping that is created when adding the following document.
 
-00:12:27,100  -->  00:12:31,540
-Anyway, let’s check the mapping that is
-created when adding the following document.
+As you can see, both field mappings have the “index” parameter set to “false” as we expected.
 
-143
+Before ending this lecture, I want to briefly talk about the differences between dynamic
 
-00:12:32,580  -->  00:12:38,340
-As you can see, both field mappings have the
-“index” parameter set to “false” as we expected.
+templates and index templates, just in case you are confused.
 
-144
+An index template applies field mappings and/or index settings when its pattern matches the
 
-00:12:39,720  -->  00:12:44,560
-Before ending this lecture, I want to briefly
-talk about the differences between dynamic
-
-145
-
-00:12:44,560  -->  00:12:48,600
-templates and index templates, just in case
-you are confused.
-
-146
-
-00:12:49,320  -->  00:12:54,840
-An index template applies field mappings and/or
-index settings when its pattern matches the
-
-147
-
-00:12:54,840  -->  00:12:56,280
 name of an index.
 
-148
+A dynamic template, on the other hand, is applied when a new field is encountered and
 
-00:12:56,920  -->  00:13:02,340
-A dynamic template, on the other hand, is
-applied when a new field is encountered and
-
-149
-
-00:13:02,340  -->  00:13:04,080
 dynamic mapping is enabled.
 
-150
+If the template’s conditions match, the field mapping is added for the new field.
 
-00:13:04,980  -->  00:13:09,980
-If the template’s conditions match, the
-field mapping is added for the new field.
+A dynamic template is therefore a way to dynamically add mappings for fields that match certain
 
-151
+criteria, where an index template adds a fixed set of field mappings.
 
-00:13:10,740  -->  00:13:16,500
-A dynamic template is therefore a way to dynamically
-add mappings for fields that match certain
-
-152
-
-00:13:16,500  -->  00:13:21,500
-criteria, where an index template adds a fixed
-set of field mappings.

@@ -1,295 +1,105 @@
-1
+Transcript
+Let’s get back to text analysis now and talk about two important concepts; stemming
 
-00:00:03,080  -->  00:00:08,560
-Let’s get back to text analysis now and
-talk about two important concepts; stemming
-
-2
-
-00:00:08,700  -->  00:00:10,080
 and stop words.
 
-3
-
-00:00:10,820  -->  00:00:13,320
 Consider the following sentence.
 
-4
-
-00:00:13,960  -->  00:00:16,340
 “Loved” is in the past tense.
 
-5
-
-00:00:16,740  -->  00:00:18,680
 “Drinking” is a gerund.
 
-6
+“Bottles” is the plural form of the word “bottle.”
 
-00:00:19,420  -->  00:00:22,640
-“Bottles” is the plural form of the word
-“bottle.”
-
-7
-
-00:00:22,900  -->  00:00:25,200
 “Year’s” indicates possession.
 
-8
+Those were just a couple of linguistic details of the sentence.
 
-00:00:26,080  -->  00:00:29,880
-Those were just a couple of linguistic details
-of the sentence.
+The point is that those words are not in their root form.
 
-9
+Suppose that we index a document with this sentence into an Elasticsearch index, using
 
-00:00:30,580  -->  00:00:34,480
-The point is that those words are not in their
-root form.
+the “standard” analyzer, which is the default behavior for “text” fields.
 
-10
+All the analyzer is going to do is to lowercase all of the letters and get rid of the punctuation
 
-00:00:35,520  -->  00:00:40,860
-Suppose that we index a document with this
-sentence into an Elasticsearch index, using
+— apart from tokenizing the sentence of course.
 
-11
-
-00:00:40,860  -->  00:00:45,000
-the “standard” analyzer, which is the
-default behavior for “text” fields.
-
-12
-
-00:00:46,280  -->  00:00:52,180
-All the analyzer is going to do is to lowercase
-all of the letters and get rid of the punctuation
-
-13
-
-00:00:52,180  -->  00:00:55,280
-— apart from tokenizing the sentence of
-course.
-
-14
-
-00:00:56,360  -->  00:00:59,040
 What happens if we search for the term “loves?”
 
-15
+The document is not going to match because the indexed word is in a different tense.
 
-00:00:59,740  -->  00:01:04,960
-The document is not going to match because
-the indexed word is in a different tense.
+That’s typically not ideal because the meaning is essentially the same regardless of which
 
-16
+tense the word is in; the tense being different doesn’t mean that the document is not relevant.
 
-00:01:05,720  -->  00:01:11,760
-That’s typically not ideal because the meaning
-is essentially the same regardless of which
+In fact, we probably want the document to match the query instead of getting no results
 
-17
+and requiring users to search in exactly the correct tense.
 
-00:01:11,780  -->  00:01:18,080
-tense the word is in; the tense being different
-doesn’t mean that the document is not relevant.
+We can fix this by using something called stemming.
 
-18
+Stemming is the process of reducing words to their root form.
 
-00:01:18,840  -->  00:01:24,640
-In fact, we probably want the document to
-match the query instead of getting no results
+For example, the word “loved” can be stemmed to “love,” and “drinking” can be stemmed
 
-19
-
-00:01:24,640  -->  00:01:28,880
-and requiring users to search in exactly the
-correct tense.
-
-20
-
-00:01:30,320  -->  00:01:33,480
-We can fix this by using something called
-stemming.
-
-21
-
-00:01:34,200  -->  00:01:38,160
-Stemming is the process of reducing words
-to their root form.
-
-22
-
-00:01:38,900  -->  00:01:43,940
-For example, the word “loved” can be stemmed
-to “love,” and “drinking” can be stemmed
-
-23
-
-00:01:44,320  -->  00:01:45,400
 to “drink.”
 
-24
+Let’s try to apply stemming on the whole sentence and see what it then looks like.
 
-00:01:46,700  -->  00:01:51,480
-Let’s try to apply stemming on the whole
-sentence and see what it then looks like.
+As you can see, not all words are stemmed to valid words, depending on how aggressive
 
-25
-
-00:01:52,920  -->  00:01:58,740
-As you can see, not all words are stemmed
-to valid words, depending on how aggressive
-
-26
-
-00:01:58,740  -->  00:02:00,700
 the stemming is configured to be.
 
-27
+That’s just how stemming algorithms work, so that’s nothing to be concerned about.
 
-00:02:01,900  -->  00:02:06,860
-That’s just how stemming algorithms work,
-so that’s nothing to be concerned about.
+Stemming is just something Elasticsearch uses internally, so no one is going to actually
 
-28
-
-00:02:07,860  -->  00:02:13,440
-Stemming is just something Elasticsearch uses
-internally, so no one is going to actually
-
-29
-
-00:02:13,460  -->  00:02:14,820
 see these terms.
 
-30
+I will get back to how stemming works in the context of search queries very soon, but let’s
 
-00:02:15,940  -->  00:02:21,079
-I will get back to how stemming works in the
-context of search queries very soon, but let’s
-
-31
-
-00:02:21,080  -->  00:02:24,080
 talk about the concept of stop words first.
 
-32
+Simply put, stop words are words that are filtered out in the analysis process.
 
-00:02:25,600  -->  00:02:30,980
-Simply put, stop words are words that are
-filtered out in the analysis process.
+That can be any words, but stop words almost always refer to the most common words in a
 
-33
-
-00:02:31,600  -->  00:02:37,240
-That can be any words, but stop words almost
-always refer to the most common words in a
-
-34
-
-00:02:37,300  -->  00:02:38,460
 given language.
 
-35
+A couple of examples are the words “a,” “the,” “at,” “of,” and “on.”
 
-00:02:39,240  -->  00:02:45,660
-A couple of examples are the words “a,”
-“the,” “at,” “of,” and “on.”
+Common to all of these words is that they provide little to no value in terms of relevance.
 
-36
-
-00:02:46,520  -->  00:02:52,580
-Common to all of these words is that they
-provide little to no value in terms of relevance.
-
-37
-
-00:02:53,800  -->  00:02:56,600
 Consider a search on Google, for instance.
 
-38
+It’s quite unlikely that any of these words are going to affect a web page’s relevance
 
-00:02:57,500  -->  00:03:03,020
-It’s quite unlikely that any of these words
-are going to affect a web page’s relevance
-
-39
-
-00:03:03,220  -->  00:03:04,280
 to your query.
 
-40
+They are of course important words in the English language, but they provide little
 
-00:03:05,040  -->  00:03:09,520
-They are of course important words in the
-English language, but they provide little
-
-41
-
-00:03:09,520  -->  00:03:12,440
 to no value in the context of relevance scoring.
 
-42
+As a result, it’s a fairly common approach to remove these words during text processing.
 
-00:03:13,720  -->  00:03:19,640
-As a result, it’s a fairly common approach
-to remove these words during text processing.
+Doing so used to be more popular than it is today, at least in the context of Elasticsearch.
 
-43
+The reason is that the relevance algorithm that is used by Elasticsearch has become much
 
-00:03:20,520  -->  00:03:26,600
-Doing so used to be more popular than it is
-today, at least in the context of Elasticsearch.
+better at limiting how much stop words influence search results.
 
-44
+That’s why I generally don’t recommend that you remove stop words.
 
-00:03:27,760  -->  00:03:33,220
-The reason is that the relevance algorithm
-that is used by Elasticsearch has become much
+It is also not the default behavior, as the “standard” analyzer does not remove them.
 
-45
+That being said, let’s see how removing stop words would affect the sentence from
 
-00:03:33,220  -->  00:03:37,320
-better at limiting how much stop words influence
-search results.
-
-46
-
-00:03:38,460  -->  00:03:42,460
-That’s why I generally don’t recommend
-that you remove stop words.
-
-47
-
-00:03:43,400  -->  00:03:47,880
-It is also not the default behavior, as the
-“standard” analyzer does not remove them.
-
-48
-
-00:03:49,100  -->  00:03:53,580
-That being said, let’s see how removing
-stop words would affect the sentence from
-
-49
-
-00:03:53,660  -->  00:03:54,460
 before.
 
-50
+As you can see, the words “of” and “on” would be removed.
 
-00:03:55,700  -->  00:03:59,960
-As you can see, the words “of” and “on”
-would be removed.
+Now that you know what stemming and stop words are, let’s see how analyzers are used when
 
-51
-
-00:04:01,020  -->  00:04:06,360
-Now that you know what stemming and stop words
-are, let’s see how analyzers are used when
-
-52
-
-00:04:06,370  -->  00:04:07,720
 searching for documents.
+

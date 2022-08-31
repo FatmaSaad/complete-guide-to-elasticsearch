@@ -1,654 +1,233 @@
-1
+Transcript
+So far in this section, we have worked with explicit mappings, although I did briefly
 
-00:00:02,580  -->  00:00:08,000
-So far in this section, we have worked with
-explicit mappings, although I did briefly
-
-2
-
-00:00:08,000  -->  00:00:10,440
 mention the concept of dynamic mapping.
 
-3
+Dynamic mapping is what we will be working with now.
 
-00:00:11,540  -->  00:00:14,240
-Dynamic mapping is what we will be working
-with now.
+It’s essentially a way to make Elasticsearch easier to use by not requiring us to define
 
-4
-
-00:00:14,860  -->  00:00:19,780
-It’s essentially a way to make Elasticsearch
-easier to use by not requiring us to define
-
-5
-
-00:00:19,780  -->  00:00:23,120
 explicit field mappings before indexing documents.
 
-6
+The first time Elasticsearch encounters a field, it will automatically create a field
 
-00:00:24,020  -->  00:00:28,800
-The first time Elasticsearch encounters a
-field, it will automatically create a field
+mapping for it, which is then used for subsequent indexing requests.
 
-7
+Suppose that we index a document into an index that either doesn’t exist yet, or one that
 
-00:00:28,800  -->  00:00:33,220
-mapping for it, which is then used for subsequent
-indexing requests.
-
-8
-
-00:00:34,280  -->  00:00:39,620
-Suppose that we index a document into an index
-that either doesn’t exist yet, or one that
-
-9
-
-00:00:39,620  -->  00:00:41,620
 doesn’t contain any mappings.
 
-10
+We specify three fields, none of which Elasticsearch has seen before, so it automatically creates
 
-00:00:42,040  -->  00:00:48,580
-We specify three fields, none of which Elasticsearch
-has seen before, so it automatically creates
-
-11
-
-00:00:48,580  -->  00:00:50,320
 a mapping for each field.
 
-12
+Let’s have a look at the field mappings that would be generated.
 
-00:00:50,940  -->  00:00:53,900
-Let’s have a look at the field mappings
-that would be generated.
+The “created_at” field was mapped to the “date” data type, even though we specified
 
-13
-
-00:00:55,120  -->  00:00:59,960
-The “created_at” field was mapped to the
-“date” data type, even though we specified
-
-14
-
-00:00:59,960  -->  00:01:01,340
 a string as the value.
 
-15
+That’s because there is no “date” data type in JSON, so Elasticsearch uses a process
 
-00:01:01,920  -->  00:01:07,560
-That’s because there is no “date” data
-type in JSON, so Elasticsearch uses a process
-
-16
-
-00:01:07,560  -->  00:01:10,860
 called date detection to… well, detect dates.
 
-17
-
-00:01:11,420  -->  00:01:13,000
 I will get back to that in a moment.
 
-18
+The “in_stock” field was mapped to the “long” data type because we specified
 
-00:01:14,180  -->  00:01:18,480
-The “in_stock” field was mapped to the
-“long” data type because we specified
-
-19
-
-00:01:18,480  -->  00:01:20,900
 a numeric value without decimals.
 
-20
+In this case an integer would be sufficient and save us some disk space, but Elasticsearch
 
-00:01:21,380  -->  00:01:27,740
-In this case an integer would be sufficient
-and save us some disk space, but Elasticsearch
+cannot know how large numbers we intend to store for a field, so it always chooses the
 
-21
-
-00:01:27,740  -->  00:01:32,980
-cannot know how large numbers we intend to
-store for a field, so it always chooses the
-
-22
-
-00:01:32,980  -->  00:01:34,280
 “long” data type.
 
-23
+When storing millions of documents, it might be worth explicitly mapping the field as an
 
-00:01:35,440  -->  00:01:40,500
-When storing millions of documents, it might
-be worth explicitly mapping the field as an
-
-24
-
-00:01:40,520  -->  00:01:41,640
 integer instead.
 
-25
+The “tags” field was interestingly mapped as a multi-field with both the “text”
 
-00:01:42,880  -->  00:01:47,900
-The “tags” field was interestingly mapped
-as a multi-field with both the “text”
-
-26
-
-00:01:47,900  -->  00:01:49,640
 and “keyword” data types.
 
-27
+Notice how the keyword mapping is named “keyword,” which follows the naming convention that I
 
-00:01:50,020  -->  00:01:55,180
-Notice how the keyword mapping is named “keyword,”
-which follows the naming convention that I
-
-28
-
-00:01:55,180  -->  00:01:56,480
 mentioned earlier.
 
-29
+The reasoning behind this mapping is that Elasticsearch doesn’t know how you intend
 
-00:01:57,280  -->  00:02:02,160
-The reasoning behind this mapping is that
-Elasticsearch doesn’t know how you intend
-
-30
-
-00:02:02,160  -->  00:02:03,700
 to query fields.
 
-31
+That’s why it adds two mappings, which can be used for different use cases; the “text”
 
-00:02:04,620  -->  00:02:10,360
-That’s why it adds two mappings, which can
-be used for different use cases; the “text”
+mapping should be used for full-text searches, while the “keyword” mapping should be
 
-32
+used for exact matches, aggregations, and sorting.
 
-00:02:10,360  -->  00:02:15,100
-mapping should be used for full-text searches,
-while the “keyword” mapping should be
-
-33
-
-00:02:15,100  -->  00:02:18,460
-used for exact matches, aggregations, and
-sorting.
-
-34
-
-00:02:19,460  -->  00:02:25,900
 You should think of this as a sensible default behavior, but it might not always be the best mapping.
 
-35
+In this example, it’s quite unlikely that we will be performing full-text searches on
 
-00:02:26,560  -->  00:02:31,860
-In this example, it’s quite unlikely that
-we will be performing full-text searches on
+tags; we will probably only do two things, being to filter documents based on exact matches,
 
-36
-
-00:02:31,860  -->  00:02:38,660
-tags; we will probably only do two things,
-being to filter documents based on exact matches,
-
-37
-
-00:02:38,720  -->  00:02:41,040
 and to do aggregations.
 
-38
+This means that the “text” mapping would be unused, and it would just cause indexing
 
-00:02:41,980  -->  00:02:47,100
-This means that the “text” mapping would
-be unused, and it would just cause indexing
-
-39
-
-00:02:47,100  -->  00:02:49,620
 overhead and a waste of disk space.
 
-40
+On the contrary, a “description” field would rarely be used for aggregations or sorting,
 
-00:02:50,220  -->  00:02:55,620
-On the contrary, a “description” field
-would rarely be used for aggregations or sorting,
-
-41
-
-00:02:55,960  -->  00:02:58,540
 because that just wouldn’t make any sense.
 
-42
-
-00:02:59,240  -->  00:03:05,380
 We would perform full-text searches on such a field, rendering the “keyword” mapping redundant.
 
-43
+This brings me to the “ignore_above” parameter that has a value of 256.
 
-00:03:06,300  -->  00:03:12,420
-This brings me to the “ignore_above” parameter
-that has a value of 256.
+This simply ignores strings that are more than 256 characters long, causing the value
 
-44
+to not be part of the inverted index for the “keyword” mapping.
 
-00:03:13,280  -->  00:03:19,020
-This simply ignores strings that are more
-than 256 characters long, causing the value
+This is done because it almost never makes sense to use such long values for sorting
 
-45
-
-00:03:19,020  -->  00:03:22,540
-to not be part of the inverted index for the
-“keyword” mapping.
-
-46
-
-00:03:23,560  -->  00:03:28,640
-This is done because it almost never makes
-sense to use such long values for sorting
-
-47
-
-00:03:28,640  -->  00:03:30,440
 and aggregations.
 
-48
+In such a case, the values just use unnecessary disk space, because the data is effectively
 
-00:03:31,340  -->  00:03:37,620
-In such a case, the values just use unnecessary
-disk space, because the data is effectively
-
-49
-
-00:03:37,620  -->  00:03:39,800
 duplicated for each mapping.
 
-50
+As an optimization to always provide both mappings, Elasticsearch ignores long values
 
-00:03:40,700  -->  00:03:46,260
-As an optimization to always provide both
-mappings, Elasticsearch ignores long values
-
-51
-
-00:03:46,260  -->  00:03:47,680
 for the “keyword” mapping.
 
-52
+That’s just to avoid storing long texts twice, such as product descriptions or blog posts.
 
-00:03:48,460  -->  00:03:54,620
-That’s just to avoid storing long texts
-twice, such as product descriptions or blog posts.
+If you index values that are less than 256 characters long and you don’t make use of
 
-53
+the “keyword” mapping, then it’s still a waste of disk space, but the impact is reduced.
 
-00:03:55,660  -->  00:04:01,300
-If you index values that are less than 256
-characters long and you don’t make use of
-
-54
-
-00:04:01,300  -->  00:04:06,600
-the “keyword” mapping, then it’s still
-a waste of disk space, but the impact is reduced.
-
-55
-
-00:04:07,680  -->  00:04:13,820
 Therefore you should consider this default mapping a sensible default that is used for convenience.
 
-56
+If you know that you won’t need either of the two mappings, then you should consider
 
-00:04:14,340  -->  00:04:18,440
-If you know that you won’t need either of
-the two mappings, then you should consider
-
-57
-
-00:04:18,460  -->  00:04:21,020
 adding your own mapping as an optimization.
 
-58
+If you just store a few thousand documents, it’s really not a big deal, but if you anticipate
 
-00:04:21,940  -->  00:04:28,080
-If you just store a few thousand documents,
-it’s really not a big deal, but if you anticipate
+that you will scale an index up to many million documents, then the savings will eventually
 
-59
-
-00:04:28,080  -->  00:04:33,520
-that you will scale an index up to many million
-documents, then the savings will eventually
-
-60
-
-00:04:33,520  -->  00:04:35,040
 be significant.
 
-61
+You just saw three examples of how Elasticsearch maps data types into field mappings.
 
-00:04:36,180  -->  00:04:41,520
-You just saw three examples of how Elasticsearch
-maps data types into field mappings.
+Let’s take a look at the rules that are used to determine how fields are mapped dynamically.
 
-62
+When a string value is encountered, it is typically mapped to a “text” field which
 
-00:04:42,200  -->  00:04:46,700
-Let’s take a look at the rules that are
-used to determine how fields are mapped dynamically.
-
-63
-
-00:04:48,160  -->  00:04:53,200
-When a string value is encountered, it is
-typically mapped to a “text” field which
-
-64
-
-00:04:53,200  -->  00:04:55,040
 has a nested “keyword” mapping.
 
-65
+There are two exceptions to this, with the first one being if the value passes date detection.
 
-00:04:56,140  -->  00:05:01,840
-There are two exceptions to this, with the
-first one being if the value passes date detection.
+By default, values are checked against the date formats that you see on your screen now,
 
-66
-
-00:05:02,440  -->  00:05:07,540
-By default, values are checked against the
-date formats that you see on your screen now,
-
-67
-
-00:05:07,540  -->  00:05:09,340
 but this can be configured.
 
-68
+Perhaps you noticed how the table shows that strings can also be mapped to “float”
 
-00:05:10,740  -->  00:05:15,600
-Perhaps you noticed how the table shows that
-strings can also be mapped to “float”
-
-69
-
-00:05:15,640  -->  00:05:17,040
 or “long” fields.
 
-70
+This is done with numeric detection, which is essentially coercion.
 
-00:05:17,460  -->  00:05:21,640
-This is done with numeric detection, which
-is essentially coercion.
+If a string contains only a number, numeric detection will map the field as either “float”
 
-71
-
-00:05:22,540  -->  00:05:28,200
-If a string contains only a number, numeric
-detection will map the field as either “float”
-
-72
-
-00:05:28,200  -->  00:05:30,500
 or “long,” depending on the value.
 
-73
+This behavior is actually disabled by default, hence why I have listed the data types in parenthesis.
 
-00:05:31,720  -->  00:05:38,240
-This behavior is actually disabled by default,
-hence why I have listed the data types in parenthesis.
+You can enable it if you want to, but that’s not the best practice.
 
-74
+Instead, you can map numeric fields explicitly, and if numbers are sent to Elasticsearch as
 
-00:05:39,080  -->  00:05:43,320
-You can enable it if you want to, but that’s
-not the best practice.
-
-75
-
-00:05:44,620  -->  00:05:50,580
-Instead, you can map numeric fields explicitly,
-and if numbers are sent to Elasticsearch as
-
-76
-
-00:05:50,600  -->  00:05:53,580
 strings, coercion will take care of the rest.
 
-77
+Even better, you should ensure that numbers are always sent to Elasticsearch as numbers
 
-00:05:54,420  -->  00:05:59,520
-Even better, you should ensure that numbers
-are always sent to Elasticsearch as numbers
-
-78
-
-00:05:59,540  -->  00:06:01,100
 instead of strings.
 
-79
+Numeric detection and coercion are essentially ways for Elasticsearch to be forgiving, but
 
-00:06:01,780  -->  00:06:07,380
-Numeric detection and coercion are essentially
-ways for Elasticsearch to be forgiving, but
-
-80
-
-00:06:07,380  -->  00:06:09,560
 you should try to not rely on them.
 
-81
+Next, integers are mapped to the “long” data type.
 
-00:06:11,260  -->  00:06:14,500
-Next, integers are mapped to the “long”
-data type.
+As I mentioned earlier, Elasticsearch has no way of knowing how large numbers you intend
 
-82
+to store, so it chooses the “long” data type just in case.
 
-00:06:15,200  -->  00:06:20,520
-As I mentioned earlier, Elasticsearch has
-no way of knowing how large numbers you intend
+Floating point numbers and booleans are mapped to “float” and “boolean,” so no surprises there.
 
-83
-
-00:06:20,520  -->  00:06:24,640
-to store, so it chooses the “long” data
-type just in case.
-
-84
-
-00:06:25,900  -->  00:06:32,420
-Floating point numbers and booleans are mapped
-to “float” and “boolean,” so no surprises there.
-
-85
-
-00:06:34,020  -->  00:06:36,880
 Objects are mapped to… well, objects.
 
-86
+As you know, objects are a bit special, since there is no data type named “object,”
 
-00:06:37,280  -->  00:06:42,419
-As you know, objects are a bit special, since
-there is no data type named “object,”
+so it’s an implicit data type you could say.
 
-87
+Here is an example of how an object would be mapped using dynamic mapping.
 
-00:06:42,420  -->  00:06:45,240
-so it’s an implicit data type you could
-say.
+Each key-value pair within the “cpu” object will be mapped using the same rules as any
 
-88
-
-00:06:46,020  -->  00:06:50,140
-Here is an example of how an object would
-be mapped using dynamic mapping.
-
-89
-
-00:06:51,420  -->  00:06:56,340
-Each key-value pair within the “cpu” object
-will be mapped using the same rules as any
-
-90
-
-00:06:56,340  -->  00:06:57,720
 other field.
 
-91
+Lastly, let’s talk about how arrays are mapped.
 
-00:06:58,940  -->  00:07:02,100
-Lastly, let’s talk about how arrays are
-mapped.
+As you know, the mapping won’t be any different than other fields because every field in Elasticsearch
 
-92
+may contain zero or more values, so there is no need to define this.
 
-00:07:03,080  -->  00:07:09,120
-As you know, the mapping won’t be any different
-than other fields because every field in Elasticsearch
+The difference is how Elasticsearch infers the data type.
 
-93
+It does so based on the first non-null value in the array.
 
-00:07:09,120  -->  00:07:13,780
-may contain zero or more values, so there
-is no need to define this.
+That value is used to determine the data type based on the same rules as shown in the diagram.
 
-94
+Apart from the aforementioned rules, specifying a NULL value for a field will cause Elasticsearch
 
-00:07:14,620  -->  00:07:17,720
-The difference is how Elasticsearch infers
-the data type.
+to completely ignore that field and not add a mapping for it.
 
-95
+Remember the “products” index that we created earlier in the course?
 
-00:07:18,360  -->  00:07:22,100
-It does so based on the first non-null value
-in the array.
+We indexed a thousand documents into it without adding any mappings first.
 
-96
+Since dynamic mapping is enabled by default, the field mappings were created for us automatically
 
-00:07:22,900  -->  00:07:28,540
-That value is used to determine the data type
-based on the same rules as shown in the diagram.
+based on the field values that we supplied to the Bulk API.
 
-97
+Let’s take a short moment to inspect the mapping.
 
-00:07:30,360  -->  00:07:36,600
-Apart from the aforementioned rules, specifying
-a NULL value for a field will cause Elasticsearch
-
-98
-
-00:07:36,600  -->  00:07:40,220
-to completely ignore that field and not add
-a mapping for it.
-
-99
-
-00:07:42,060  -->  00:07:45,440
-Remember the “products” index that we
-created earlier in the course?
-
-100
-
-00:07:45,880  -->  00:07:50,040
-We indexed a thousand documents into it without
-adding any mappings first.
-
-101
-
-00:07:51,040  -->  00:07:57,080
-Since dynamic mapping is enabled by default,
-the field mappings were created for us automatically
-
-102
-
-00:07:57,080  -->  00:08:00,720
-based on the field values that we supplied
-to the Bulk API.
-
-103
-
-00:08:01,900  -->  00:08:04,560
-Let’s take a short moment to inspect the
-mapping.
-
-104
-
-00:08:05,080  -->  00:08:10,440
 Spoiler alert, it’s going to look pretty similar to what you have already seen in this lecture.
 
-105
+Looking at the mapping, it hopefully looks as you expected.
 
-00:08:12,300  -->  00:08:16,040
-Looking at the mapping, it hopefully looks
-as you expected.
-
-106
-
-00:08:25,460  -->  00:08:27,640
 Just a small thing to note.
 
-107
-
-00:08:28,000  -->  00:08:33,040
 Both the “description” and “tags” fields are mapped as “text” and “keyword” fields.
 
-108
-
-00:08:33,440  -->  00:08:35,020
 Nothing new about that.
 
-109
+However, this is one example of how dynamic mapping does not always map things in the
 
-00:08:35,680  -->  00:08:40,800
-However, this is one example of how dynamic
-mapping does not always map things in the
-
-110
-
-00:08:40,800  -->  00:08:42,280
 most efficient way.
 
-111
+In this case, we could do without the “keyword” mapping for the “description” field, and
 
-00:08:43,180  -->  00:08:48,120
-In this case, we could do without the “keyword”
-mapping for the “description” field, and
+the “text” mapping for the “tags” field.
 
-112
+That would cause documents to take up less storage space and also slightly increase the
 
-00:08:48,120  -->  00:08:50,400
-the “text” mapping for the “tags”
-field.
-
-113
-
-00:08:51,180  -->  00:08:56,080
-That would cause documents to take up less
-storage space and also slightly increase the
-
-114
-
-00:08:56,100  -->  00:08:57,720
 indexing throughput.
 
-115
-
-00:08:58,600  -->  00:09:00,800
 Those were the very basics of dynamic mapping.
 
-116
-
-00:09:01,020  -->  00:09:02,200
 Let’s continue.
+
