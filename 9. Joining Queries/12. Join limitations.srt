@@ -64,7 +64,7 @@ documents, because we had to explicitly provide
 12
 
 00:00:49,609  -->  00:00:54,680
-a “routing” parameter to make sure that
+a "routing" parameter to make sure that
 the documents ended up on the same shard.
 
 13
@@ -116,7 +116,7 @@ as you have already seen in the previous lectures.
 21
 
 00:01:33,409  -->  00:01:36,829
-Those were the limitations that apply to “join”
+Those were the limitations that apply to "join"
 fields.
 
 22

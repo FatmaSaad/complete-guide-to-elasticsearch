@@ -14,12 +14,12 @@ queries.
 
 00:00:10,400  -->  00:00:15,240
 Note that in this lecture, I am talking specifically
-about the performance of the “join” field,
+about the performance of the "join" field,
 
 4
 
 00:00:15,240  -->  00:00:18,980
-i.e. parent/child joins, and not the “nested”
+i.e. parent/child joins, and not the "nested"
 query.
 
 5
@@ -70,12 +70,12 @@ Otherwise, let’s dive into a bit more detail.
 13
 
 00:00:50,400  -->  00:00:53,700
-Like I said, using “join” fields is slow.
+Like I said, using "join" fields is slow.
 
 14
 
 00:00:53,700  -->  00:00:59,300
-For example, the performance of the “has_child”
+For example, the performance of the "has_child"
 query degrades the more child documents that
 
 15
@@ -92,7 +92,7 @@ more documents you add to an index that uses
 17
 
 00:01:07,090  -->  00:01:08,800
-a “join” field.
+a "join" field.
 
 18
 
@@ -109,7 +109,7 @@ which will eventually become quite significant.
 20
 
 00:01:19,180  -->  00:01:24,030
-The same applies for the “has_parent”
+The same applies for the "has_parent"
 query, where the number of parent documents
 
 21
@@ -133,7 +133,7 @@ almost always avoid this.
 
 00:01:37,120  -->  00:01:41,460
 That being said, there is a scenario where
-it makes sense to use a “join” field and
+it makes sense to use a "join" field and
 
 25
 
@@ -160,7 +160,7 @@ ingredients as child documents, is a good
 29
 
 00:01:56,860  -->  00:02:01,740
-candidate for using a “join” field, because
+candidate for using a "join" field, because
 there are going to be significantly more ingredients
 
 30
@@ -177,14 +177,14 @@ objects if you wanted to, but the point is
 32
 
 00:02:07,909  -->  00:02:11,920
-that it would also be fine to use a “join”
+that it would also be fine to use a "join"
 field in this case.
 
 33
 
 00:02:11,920  -->  00:02:16,740
 Alright, so now that you know a bit more about
-the implications of using “join” fields,
+the implications of using "join" fields,
 
 34
 
@@ -194,7 +194,7 @@ there are two more questions left to be answered.
 35
 
 00:02:19,680  -->  00:02:24,910
-The first one is: if using “join” fields
+The first one is: if using "join" fields
 is usually discouraged, then why on Earth
 
 36
@@ -253,7 +253,7 @@ end the choice is yours.
 45
 
 00:03:02,670  -->  00:03:07,840
-The other question is: if “join” fields
+The other question is: if "join" fields
 are usually not a good idea to use, then how
 
 46
@@ -264,7 +264,7 @@ do we map document relationships properly?
 47
 
 00:03:10,880  -->  00:03:16,920
-Well, for one, we have the “nested” data
+Well, for one, we have the "nested" data
 type, but that might not always suit your needs.
 
 48
@@ -336,16 +336,16 @@ to be done in Elasticsearch, at least generally speaking.
 
 00:04:07,660  -->  00:04:11,660
 So unless you have a good reason for using
-“join” fields, try to just denormalize
+"join" fields, try to just denormalize
 
 60
 
 00:04:11,670  -->  00:04:15,900
-your data and use “join” fields whenever
+your data and use "join" fields whenever
 that doesn’t work for you, and you can accept
 
 61
 
 00:04:15,900  -->  00:04:19,900
 the consequences and limitations of using
-“join” fields.
+"join" fields.
