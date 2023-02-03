@@ -1,6 +1,6 @@
 # complete-guide-to-elasticsearch
 ![](/elasticsearch.png)
-This repository contains my summary, my comprehension, and all of the queries used within the [Complete Guide to Elasticsearch course](https://l.codingexplained.com/r/elasticsearch-course?src=github) by **Bo Andersen**.
+This repository contains my summary, comprehension, and all of the queries used within the [Complete Guide to Elasticsearch course](https://l.codingexplained.com/r/elasticsearch-course?src=github) by **Bo Andersen**.
 
 ## content
 
